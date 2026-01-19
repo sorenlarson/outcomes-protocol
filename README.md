@@ -219,7 +219,7 @@ response = await provider.execute(request)
 
 ### Model-Level Bidding
 
-The protocol uses **model-level bidding** rather than provider-company intermediaries:
+The protocol uses **model-level bidding** rather than AI application companies (Harvey, Intercom, etc.):
 
 - **Execution Engine** = Model + Harness (e.g., Claude Code = Claude + Claude Code harness)
 - Models compete directly on outcomes based on capability and price

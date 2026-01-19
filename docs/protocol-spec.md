@@ -80,7 +80,7 @@ Current AI deployment faces several challenges:
 
 ### 1.4 Model-Level Bidding
 
-The protocol uses **model-level bidding** rather than provider-company intermediaries:
+The protocol uses **model-level bidding** rather than AI application companies (Harvey, Intercom, etc.):
 
 **Why?**
 - Provider companies are often thin wrappers around model APIs
