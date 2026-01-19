@@ -2953,30 +2953,37 @@ select:focus {
     width: 100%;
     position: static;
     height: auto;
-    padding: 16px 0;
+    padding: 12px 16px;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     overflow-x: auto;
-    gap: 0;
+    gap: 8px;
+    border-right: none;
+    border-bottom: 1px solid var(--gray-200);
+    -webkit-overflow-scrolling: touch;
   }
 
   .docs-nav-section {
-    min-width: 150px;
+    display: contents;
   }
 
   .docs-nav-section h4 {
-    padding: 8px 16px;
+    display: none;
   }
 
   .docs-nav-item {
-    padding: 8px 16px 8px 24px;
+    padding: 8px 14px;
     border-left: none;
-    border-bottom: 2px solid transparent;
+    border-radius: 20px;
+    white-space: nowrap;
+    font-size: 13px;
+    background: var(--bg-tertiary);
   }
 
   .docs-nav-item.active {
     border-left-color: transparent;
-    border-bottom-color: var(--primary);
+    background: var(--accent);
+    color: white;
   }
 
   .docs-content {
