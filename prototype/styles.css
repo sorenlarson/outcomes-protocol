@@ -2911,12 +2911,6 @@ select:focus {
   opacity: 1;
 }
 
-@media (max-width: 768px) {
-  .code-copy-btn {
-    opacity: 1;
-  }
-}
-
 .code-copy-btn:hover {
   background: var(--accent);
   border-color: var(--accent);
@@ -3064,6 +3058,10 @@ select:focus {
     padding: 16px 20px;
     border-right: none;
     border-bottom: 1px solid var(--gray-200);
+    position: sticky;
+    top: 64px;
+    background: var(--bg-primary);
+    z-index: 10;
   }
 
   .wizard-steps {
@@ -3146,6 +3144,10 @@ select:focus {
   .code-block {
     margin: 20px -20px;
     border-radius: 0;
+  }
+
+  .code-copy-btn {
+    opacity: 1;
   }
 }
 

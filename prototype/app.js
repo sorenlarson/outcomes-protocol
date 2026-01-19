@@ -562,6 +562,13 @@ function mobileNavTo(viewId) {
 window.toggleMobileMenu = toggleMobileMenu;
 window.mobileNavTo = mobileNavTo;
 
+// Add context source button (placeholder)
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('add-source-btn')) {
+    alert('Context source configuration coming soon');
+  }
+});
+
 // Outcome Cards
 function initOutcomeCards() {
   const cards = document.querySelectorAll('.outcome-card');
