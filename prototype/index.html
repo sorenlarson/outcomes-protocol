@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Outcomes Protocol - Marketplace</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <span class="logo-icon">&#9670;</span>
+          <span class="logo-text">Outcomes Protocol</span>
+        </div>
+        <nav class="nav">
+          <a href="#" class="nav-item active" data-view="catalog">Catalog</a>
+          <a href="#" class="nav-item" data-view="dashboard">Dashboard</a>
+          <a href="#" class="nav-item" data-view="history">History</a>
+        </nav>
+      </div>
+      <div class="header-right">
+        <div class="budget-indicator">
+          <span class="budget-label">Monthly Budget</span>
+          <span class="budget-value">$4,012 / $5,000</span>
+          <div class="budget-bar">
+            <div class="budget-fill" style="width: 80%"></div>
+          </div>
+        </div>
+        <div class="user-menu">
+          <span class="user-avatar">AC</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+      <!-- View: Catalog -->
+      <div id="view-catalog" class="view active">
+        <div class="page-header">
+          <h1>What would you like to accomplish?</h1>
+          <p>Select an outcome type to get started</p>
+        </div>
+
+        <div class="outcome-grid">
+          <!-- Customer Service -->
+          <div class="outcome-card" data-category="customer-service">
+            <div class="outcome-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <h3>Customer Service</h3>
+            <p>Resolve issues and support customers with AI-powered assistance</p>
+            <div class="outcome-meta">
+              <span class="price-range">from $0.15</span>
+              <span class="success-rate">94% success</span>
+            </div>
+          </div>
+
+          <!-- Code -->
+          <div class="outcome-card" data-category="code">
+            <div class="outcome-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="16 18 22 12 16 6"></polyline>
+                <polyline points="8 6 2 12 8 18"></polyline>
+              </svg>
+            </div>
+            <h3>Code</h3>
+            <p>Review, fix, and generate code with automated quality assurance</p>
+            <div class="outcome-meta">
+              <span class="price-range">from $0.50</span>
+              <span class="success-rate">91% success</span>
+            </div>
+          </div>
+
+          <!-- Legal -->
+          <div class="outcome-card" data-category="legal">
+            <div class="outcome-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"></path>
+              </svg>
+            </div>
+            <h3>Legal</h3>
+            <p>Review, draft, and research legal documents with AI analysis</p>
+            <div class="outcome-meta">
+              <span class="price-range">from $2.00</span>
+              <span class="success-rate">96% success</span>
+            </div>
+          </div>
+
+          <!-- Medical -->
+          <div class="outcome-card" data-category="medical">
+            <div class="outcome-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              </svg>
+            </div>
+            <h3>Medical</h3>
+            <p>Clinical documentation, coding, and patient record summaries</p>
+            <div class="outcome-meta">
+              <span class="price-range">from $1.00</span>
+              <span class="success-rate">98% success</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- View: Outcome Type Selection -->
+      <div id="view-outcome-types" class="view">
+        <div class="page-header">
+          <button class="back-button" data-back="catalog">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back
+          </button>
+          <h1 id="category-title">Customer Service</h1>
+          <p>Select outcome type</p>
+        </div>
+
+        <div class="outcome-types-list" id="outcome-types-container">
+          <!-- Populated by JavaScript -->
+        </div>
+      </div>
+
+      <!-- View: Configuration Wizard -->
+      <div id="view-wizard" class="view">
+        <div class="wizard-container">
+          <div class="wizard-sidebar">
+            <div class="wizard-steps">
+              <div class="wizard-step active" data-step="1">
+                <span class="step-number">1</span>
+                <span class="step-label">Context</span>
+              </div>
+              <div class="wizard-step" data-step="2">
+                <span class="step-number">2</span>
+                <span class="step-label">Tools</span>
+              </div>
+              <div class="wizard-step" data-step="3">
+                <span class="step-number">3</span>
+                <span class="step-label">Success</span>
+              </div>
+              <div class="wizard-step" data-step="4">
+                <span class="step-number">4</span>
+                <span class="step-label">Delivery</span>
+              </div>
+              <div class="wizard-step" data-step="5">
+                <span class="step-number">5</span>
+                <span class="step-label">Pricing</span>
+              </div>
+              <div class="wizard-step" data-step="6">
+                <span class="step-number">6</span>
+                <span class="step-label">Review</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="wizard-content">
+            <!-- Step 1: Context -->
+            <div class="wizard-panel active" data-panel="1">
+              <h2>Your Data Sources</h2>
+              <p class="wizard-description">Connect your systems so the AI can access relevant information. Execution engines may use additional resources (databases, APIs) with costs included in the outcome price.</p>
+
+              <div class="context-sources">
+                <div class="context-source connected">
+                  <div class="source-header">
+                    <input type="checkbox" checked>
+                    <span class="source-icon">&#128218;</span>
+                    <span class="source-name">Knowledge Base</span>
+                    <span class="source-status connected">Connected</span>
+                  </div>
+                  <div class="source-details">
+                    <span>help.acme.com - 1,247 articles synced</span>
+                  </div>
+                </div>
+
+                <div class="context-source connected">
+                  <div class="source-header">
+                    <input type="checkbox" checked>
+                    <span class="source-icon">&#128230;</span>
+                    <span class="source-name">Product Catalog</span>
+                    <span class="source-status connected">Connected</span>
+                  </div>
+                  <div class="source-details">
+                    <span>MCP Server: products.acme.internal</span>
+                  </div>
+                </div>
+
+                <div class="context-source connected">
+                  <div class="source-header">
+                    <input type="checkbox" checked>
+                    <span class="source-icon">&#128100;</span>
+                    <span class="source-name">Customer Data</span>
+                    <span class="source-status connected">Connected</span>
+                  </div>
+                  <div class="source-details">
+                    <span>MCP Server: crm.acme.internal</span>
+                  </div>
+                </div>
+
+                <div class="context-source">
+                  <div class="source-header">
+                    <input type="checkbox">
+                    <span class="source-icon">&#128196;</span>
+                    <span class="source-name">Policy Documents</span>
+                    <span class="source-status">Not configured</span>
+                  </div>
+                  <div class="source-details">
+                    <span>Upload refund policy, shipping terms, etc.</span>
+                  </div>
+                </div>
+
+                <button class="add-source-btn">+ Add Context Source</button>
+              </div>
+            </div>
+
+            <!-- Step 2: Tools -->
+            <div class="wizard-panel" data-panel="2">
+              <h2>Tools & Actions</h2>
+              <p class="wizard-description">What actions can the AI take to complete this outcome?</p>
+
+              <div class="tools-section">
+                <h3>Read-Only Actions</h3>
+                <div class="tools-list">
+                  <label class="tool-item">
+                    <input type="checkbox" checked>
+                    <span>Look up order status</span>
+                  </label>
+                  <label class="tool-item">
+                    <input type="checkbox" checked>
+                    <span>Check product availability</span>
+                  </label>
+                  <label class="tool-item">
+                    <input type="checkbox" checked>
+                    <span>View customer history</span>
+                  </label>
+                  <label class="tool-item">
+                    <input type="checkbox" checked>
+                    <span>Search knowledge base</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="tools-section">
+                <h3>Write Actions</h3>
+                <div class="tools-list">
+                  <div class="tool-item-complex">
+                    <label>
+                      <input type="checkbox" checked>
+                      <span>Process refund</span>
+                    </label>
+                    <div class="tool-config">
+                      <label>Max amount: <input type="number" value="50" class="small-input"> USD</label>
+                    </div>
+                  </div>
+                  <div class="tool-item-complex">
+                    <label>
+                      <input type="checkbox" checked>
+                      <span>Apply discount code</span>
+                    </label>
+                    <div class="tool-config">
+                      <label>Allowed codes: <input type="text" value="SORRY10, LOYALTY15" class="medium-input"></label>
+                    </div>
+                  </div>
+                  <div class="tool-item-complex">
+                    <label>
+                      <input type="checkbox">
+                      <span>Cancel order</span>
+                    </label>
+                    <div class="tool-warning">
+                      <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+                      </svg>
+                      High impact action - requires approval
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 3: Success Criteria -->
+            <div class="wizard-panel" data-panel="3">
+              <h2>Success Criteria</h2>
+              <p class="wizard-description">When does this outcome count as successful?</p>
+
+              <div class="criteria-section">
+                <h3>Success Definition</h3>
+                <div class="success-definition">
+                  <p><strong>Inquiry resolved without escalation and without customer reopening the issue.</strong></p>
+                  <p class="field-description">You report success or failure via the Conversions API based on what happens after the conversation ends.</p>
+                </div>
+
+                <div class="capi-signals">
+                  <h4>You will report via cAPI:</h4>
+                  <div class="signal-list">
+                    <div class="signal-item success">
+                      <span class="signal-event">outcome.success</span>
+                      <span class="signal-when">Ticket closed AND no reopen within 7 days</span>
+                    </div>
+                    <div class="signal-item failure">
+                      <span class="signal-event">outcome.failure</span>
+                      <span class="signal-when">Escalated to human OR customer reopened</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="criteria-section">
+                <h3>Optional Enrichment Signals</h3>
+                <p class="field-description">Report these when available to help optimize provider matching (not required for success).</p>
+                <div class="criteria-list">
+                  <label class="criterion-item">
+                    <input type="checkbox" checked>
+                    <span class="criterion-name">Customer Satisfaction (CSAT)</span>
+                    <span class="criterion-desc">If customer provides rating</span>
+                  </label>
+                  <label class="criterion-item">
+                    <input type="checkbox" checked>
+                    <span class="criterion-name">Handle Time</span>
+                    <span class="criterion-desc">Total conversation duration</span>
+                  </label>
+                  <label class="criterion-item">
+                    <input type="checkbox">
+                    <span class="criterion-name">Outcome Value</span>
+                    <span class="criterion-desc">Value of transaction (order saved, upsell)</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 4: Delivery & Escalation -->
+            <div class="wizard-panel" data-panel="4">
+              <h2>Delivery & Escalation</h2>
+              <p class="wizard-description">Configure timing and human handoff settings</p>
+
+              <div class="delivery-section" id="delivery-section">
+                <h3>Delivery Time</h3>
+                <p class="field-description" id="latency-description">Maximum time to complete the outcome</p>
+                <div class="radio-group" id="latency-options">
+                  <!-- Default: Customer Service options (will be dynamically replaced) -->
+                  <label class="radio-item selected">
+                    <input type="radio" name="latency" value="streaming" checked>
+                    <span class="radio-label">Streaming</span>
+                    <span class="radio-desc">&lt; 2 seconds - Required for phone/voice</span>
+                  </label>
+                  <label class="radio-item">
+                    <input type="radio" name="latency" value="fast">
+                    <span class="radio-label">Fast</span>
+                    <span class="radio-desc">&lt; 5 seconds - Recommended for chat</span>
+                  </label>
+                  <label class="radio-item">
+                    <input type="radio" name="latency" value="standard">
+                    <span class="radio-label">Standard</span>
+                    <span class="radio-desc">&lt; 15 seconds - Acceptable for email</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="escalation-section">
+                <h3>Escalation Policy</h3>
+                <label class="checkbox-item">
+                  <input type="checkbox" checked>
+                  Enable human handoff when AI can't complete
+                </label>
+
+                <div class="escalation-triggers" id="escalation-triggers">
+                  <h4>Escalate when:</h4>
+                  <label class="checkbox-item">
+                    <input type="checkbox" checked>
+                    Confidence drops below
+                    <select id="confidence-threshold">
+                      <option value="50">50% (Low)</option>
+                      <option value="60">60%</option>
+                      <option value="70" selected>70% (Standard)</option>
+                      <option value="80">80%</option>
+                      <option value="90">90% (High)</option>
+                    </select>
+                  </label>
+                  <label class="checkbox-item">
+                    <input type="checkbox" checked>
+                    After <input type="number" value="3" min="1" max="10" class="small-input"> failed attempts
+                  </label>
+                  <label class="checkbox-item" id="trigger-customer-request">
+                    <input type="checkbox" checked>
+                    Customer requests human
+                  </label>
+                </div>
+
+                <div class="handoff-config">
+                  <h4>Handoff destination:</h4>
+                  <select class="full-width" id="handoff-destination">
+                    <option value="zendesk">Zendesk</option>
+                    <option value="intercom">Intercom</option>
+                    <option value="github">GitHub (create issue)</option>
+                    <option value="slack">Slack channel</option>
+                    <option value="webhook">Webhook</option>
+                  </select>
+
+                  <h4>Include in handoff:</h4>
+                  <label class="checkbox-item"><input type="checkbox" checked> Summary of work attempted</label>
+                  <label class="checkbox-item"><input type="checkbox" checked> Full context/transcript</label>
+                  <label class="checkbox-item"><input type="checkbox" checked> Relevant files/artifacts</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 5: Pricing -->
+            <div class="wizard-panel" data-panel="5">
+              <h2>Bid Strategy</h2>
+              <p class="wizard-description">How would you like to control costs?</p>
+
+              <div class="strategy-cards">
+                <label class="strategy-card selected">
+                  <input type="radio" name="strategy" value="highest_volume" checked>
+                  <div class="strategy-header">
+                    <span class="strategy-name">Highest Volume</span>
+                    <span class="strategy-badge">Recommended</span>
+                  </div>
+                  <p class="strategy-desc">Get the most results for your budget.</p>
+                </label>
+
+                <label class="strategy-card">
+                  <input type="radio" name="strategy" value="cost_per_result">
+                  <div class="strategy-header">
+                    <span class="strategy-name">Cost Per Result Goal</span>
+                  </div>
+                  <p class="strategy-desc">Aim for a certain cost per result while maximizing volume.</p>
+                </label>
+
+                <label class="strategy-card">
+                  <input type="radio" name="strategy" value="bid_cap">
+                  <div class="strategy-header">
+                    <span class="strategy-name">Bid Cap</span>
+                  </div>
+                  <p class="strategy-desc">Set the highest you want to pay in any auction.</p>
+                </label>
+
+                <label class="strategy-card">
+                  <input type="radio" name="strategy" value="roas_goal">
+                  <div class="strategy-header">
+                    <span class="strategy-name">ROAS Goal</span>
+                  </div>
+                  <p class="strategy-desc">Aim to keep return on agent spend around an average amount.</p>
+                </label>
+              </div>
+
+              <!-- Strategy-specific configs -->
+              <div class="strategy-config active" id="config-highest_volume">
+                <p class="field-description">No additional configuration needed. The system will optimize to deliver as many successful outcomes as possible within your budget.</p>
+              </div>
+
+              <div class="strategy-config" id="config-cost_per_result">
+                <label>Cost per result goal</label>
+                <p class="field-description">Aim for this average cost per successful outcome. Individual costs may vary.</p>
+                <div class="cost-input-group">
+                  <span class="currency">$</span>
+                  <input type="number" value="0.45" step="0.01" min="0.01" class="cost-input" id="cost-value">
+                  <span class="cost-unit">per outcome</span>
+                </div>
+                <div class="market-reference">Market average: $0.40 for this outcome type</div>
+              </div>
+
+              <div class="strategy-config" id="config-bid_cap">
+                <label>Maximum bid</label>
+                <p class="field-description">Never pay more than this amount per outcome. You may win fewer outcomes if your cap is below market rate.</p>
+                <div class="cost-input-group">
+                  <span class="currency">$</span>
+                  <input type="number" value="1.00" step="0.01" min="0.01" class="cost-input" id="bid-cap-value">
+                  <span class="cost-unit">max per outcome</span>
+                </div>
+              </div>
+
+              <div class="strategy-config" id="config-roas_goal">
+                <label>ROAS target</label>
+                <p class="field-description">Target return on agent spend. For example, 1.5 means $1.50 in outcome value per $1.00 spent. Adherence to ROAS target is not guaranteed.</p>
+                <div class="cost-input-group">
+                  <input type="number" value="1.50" step="0.1" min="0.1" class="cost-input" id="roas-value">
+                  <span class="cost-unit">target ROAS</span>
+                </div>
+                <div class="roas-note">
+                  <p class="field-description">Requires reporting <code>outcome_value</code> via cAPI for each outcome.</p>
+                </div>
+              </div>
+
+              <div class="budget-config">
+                <label>Monthly Budget</label>
+                <p class="field-description">Maximum spend per month. Delivery stops when budget is exhausted.</p>
+                <div class="budget-input-group">
+                  <span class="currency">$</span>
+                  <input type="number" value="5000" class="budget-input" id="budget-value">
+                </div>
+                <div class="estimate">Estimated outcomes: <strong id="estimated-outcomes">varies by market conditions</strong></div>
+              </div>
+            </div>
+
+            <!-- Step 6: Review -->
+            <div class="wizard-panel" data-panel="6">
+              <h2>Review & Launch</h2>
+              <p class="wizard-description">Review your configuration before launching</p>
+
+              <div class="review-summary">
+                <div class="review-section">
+                  <h3>Outcome</h3>
+                  <div class="review-item">
+                    <span class="review-label">Type</span>
+                    <span class="review-value">Customer Service - Resolve Inquiry</span>
+                  </div>
+                  <div class="review-item">
+                    <span class="review-label">Verification</span>
+                    <span class="review-value">cAPI-verified (you report success/failure)</span>
+                  </div>
+                </div>
+
+                <div class="review-section">
+                  <h3>Context Sources</h3>
+                  <div class="review-tags">
+                    <span class="tag">Knowledge Base</span>
+                    <span class="tag">Product Catalog</span>
+                    <span class="tag">Customer Data</span>
+                  </div>
+                </div>
+
+                <div class="review-section">
+                  <h3>Tools</h3>
+                  <div class="review-tags">
+                    <span class="tag">Order Lookup</span>
+                    <span class="tag">Process Refund ($50 max)</span>
+                    <span class="tag">Apply Discount</span>
+                  </div>
+                </div>
+
+                <div class="review-section">
+                  <h3>Success Criteria</h3>
+                  <p>Inquiry resolved without escalation and without customer reopening within 7 days</p>
+                </div>
+
+                <div class="review-section">
+                  <h3>Delivery</h3>
+                  <div class="review-item">
+                    <span class="review-label">Response SLA</span>
+                    <span class="review-value">Streaming (&lt; 2 seconds)</span>
+                  </div>
+                  <div class="review-item">
+                    <span class="review-label">Escalation</span>
+                    <span class="review-value">Enabled - Zendesk Tier 2</span>
+                  </div>
+                </div>
+
+                <div class="review-section highlight">
+                  <h3>Pricing Summary</h3>
+                  <div class="review-item">
+                    <span class="review-label">Strategy</span>
+                    <span class="review-value">Cost per result goal</span>
+                  </div>
+                  <div class="review-item">
+                    <span class="review-label">Target Cost</span>
+                    <span class="review-value" id="review-target-cost">$0.45/outcome</span>
+                  </div>
+                  <div class="review-item">
+                    <span class="review-label">Monthly Budget</span>
+                    <span class="review-value" id="review-monthly-budget">$5,000</span>
+                  </div>
+                  <div class="review-item total">
+                    <span class="review-label">Est. Outcomes</span>
+                    <span class="review-value" id="review-est-outcomes">~11,111/month</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Wizard Navigation -->
+            <div class="wizard-nav">
+              <button class="btn-secondary" id="wizard-back">Back</button>
+              <button class="btn-primary" id="wizard-next">Continue</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- View: Dashboard -->
+      <div id="view-dashboard" class="view">
+        <div class="page-header dashboard-header">
+          <div class="dashboard-title-row">
+            <h1>Performance Dashboard</h1>
+            <div class="date-picker">
+              <span>Jan 1 - Jan 18, 2025</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </div>
+          </div>
+          <div class="outcome-type-chips">
+            <button class="type-chip active" data-type="all">All Types</button>
+            <button class="type-chip" data-type="cs.resolve">cs.resolve</button>
+            <button class="type-chip" data-type="code.review">code.review</button>
+            <button class="type-chip" data-type="legal.review">legal.review</button>
+            <button class="type-chip" data-type="medical.scribe">medical.scribe</button>
+          </div>
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <span class="metric-label">Outcomes</span>
+            <span class="metric-value" id="metric-outcomes">1,847</span>
+            <span class="metric-change positive" id="metric-outcomes-change">+12%</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Spend</span>
+            <span class="metric-value" id="metric-spend">$4,012</span>
+            <span class="metric-change negative" id="metric-spend-change">-3%</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Success Rate</span>
+            <span class="metric-value" id="metric-success">94.2%</span>
+            <span class="metric-change positive" id="metric-success-change">+1.5%</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Avg Cost</span>
+            <span class="metric-value" id="metric-avg-cost">$4.88</span>
+            <span class="metric-subtext" id="metric-avg-cost-target">Target: $5.00</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Avg Latency</span>
+            <span class="metric-value" id="metric-avg-latency">47s</span>
+            <span class="metric-subtext" id="metric-avg-latency-target">Target: 60s</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Escalation</span>
+            <span class="metric-value" id="metric-escalation">5.8%</span>
+            <span class="metric-change positive" id="metric-escalation-change">-0.5%</span>
+          </div>
+        </div>
+
+        <!-- Cost Optimization Trend -->
+        <div class="optimization-card">
+          <div class="optimization-header">
+            <div>
+              <h3>Cost Optimization</h3>
+              <p class="field-description">The system learns from successful outcomes and claim-free deliveries to reduce costs over time</p>
+            </div>
+            <div class="optimization-status">
+              <span class="optimization-badge">Learning Active</span>
+              <span class="optimization-outcomes">1,847 outcomes &middot; 3 claims</span>
+            </div>
+          </div>
+          <div class="cost-trend">
+            <div class="cost-trend-chart">
+              <div class="trend-points-connected">
+                <div class="trend-point" data-value="$0.68"></div>
+                <div class="trend-point"></div>
+                <div class="trend-point"></div>
+                <div class="trend-point"></div>
+                <div class="trend-point"></div>
+                <div class="trend-point"></div>
+                <div class="trend-point" data-value="$0.42"></div>
+              </div>
+            </div>
+            <div class="cost-trend-labels">
+              <span>Jan 1</span>
+              <span>Jan 6</span>
+              <span>Jan 12</span>
+              <span>Jan 18</span>
+            </div>
+          </div>
+          <div class="optimization-stats">
+            <div class="opt-stat">
+              <span class="opt-stat-value">-38%</span>
+              <span class="opt-stat-label">Cost reduction</span>
+            </div>
+            <div class="opt-stat">
+              <span class="opt-stat-value">+8%</span>
+              <span class="opt-stat-label">Success rate improvement</span>
+            </div>
+            <div class="opt-stat">
+              <span class="opt-stat-value">-22%</span>
+              <span class="opt-stat-label">Avg latency reduction</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-charts">
+          <div class="chart-card">
+            <h3>Spend by Outcome Type</h3>
+            <div class="outcome-breakdown">
+              <div class="breakdown-row">
+                <span class="breakdown-type">cs.resolve</span>
+                <div class="breakdown-bar-container">
+                  <div class="breakdown-bar" style="width: 45%"></div>
+                </div>
+                <span class="breakdown-value">$1,802</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-type">code.review</span>
+                <div class="breakdown-bar-container">
+                  <div class="breakdown-bar" style="width: 30%"></div>
+                </div>
+                <span class="breakdown-value">$1,204</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-type">legal.review</span>
+                <div class="breakdown-bar-container">
+                  <div class="breakdown-bar" style="width: 20%"></div>
+                </div>
+                <span class="breakdown-value">$820</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-type">medical.scribe</span>
+                <div class="breakdown-bar-container">
+                  <div class="breakdown-bar" style="width: 5%"></div>
+                </div>
+                <span class="breakdown-value">$186</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <h3>Outcome Results</h3>
+            <div class="outcome-breakdown">
+              <div class="breakdown-row">
+                <span class="breakdown-type">Completed</span>
+                <div class="breakdown-bar-container">
+                  <div class="breakdown-bar" style="width: 89%; background: var(--success)"></div>
+                </div>
+                <span class="breakdown-value">1,644</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-type">Escalated</span>
+                <div class="breakdown-bar-container">
+                  <div class="breakdown-bar" style="width: 8%; background: var(--escalated)"></div>
+                </div>
+                <span class="breakdown-value">148</span>
+              </div>
+              <div class="breakdown-row">
+                <span class="breakdown-type">Failed</span>
+                <div class="breakdown-bar-container">
+                  <div class="breakdown-bar" style="width: 3%; background: var(--error)"></div>
+                </div>
+                <span class="breakdown-value">55</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="recent-outcomes">
+          <h3>Recent Outcomes</h3>
+          <table class="outcomes-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Cost</th>
+                <th>Latency</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>out_a1b2c3</code></td>
+                <td>cs.resolve</td>
+                <td><span class="status-badge success">Completed</span></td>
+                <td>$0.42</td>
+                <td>23s</td>
+                <td>2 min ago</td>
+              </tr>
+              <tr>
+                <td><code>out_d4e5f6</code></td>
+                <td>cs.resolve</td>
+                <td><span class="status-badge success">Completed</span></td>
+                <td>$0.51</td>
+                <td>45s</td>
+                <td>5 min ago</td>
+              </tr>
+              <tr>
+                <td><code>out_g7h8i9</code></td>
+                <td>code.review</td>
+                <td><span class="status-badge success">Completed</span></td>
+                <td>$1.50</td>
+                <td>8 min</td>
+                <td>7 min ago</td>
+              </tr>
+              <tr>
+                <td><code>out_j0k1l2</code></td>
+                <td>cs.resolve</td>
+                <td><span class="status-badge escalated">Escalated</span></td>
+                <td>$0.15</td>
+                <td>89s</td>
+                <td>12 min ago</td>
+              </tr>
+              <tr>
+                <td><code>out_m3n4o5</code></td>
+                <td>cs.resolve</td>
+                <td><span class="status-badge success">Completed</span></td>
+                <td>$0.38</td>
+                <td>31s</td>
+                <td>15 min ago</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- View: History -->
+      <div id="view-history" class="view">
+        <div class="page-header">
+          <h1>Outcome History</h1>
+          <div class="history-filters">
+            <select class="filter-select">
+              <option>All Types</option>
+              <option>cs.resolve</option>
+              <option>code.review</option>
+              <option>code.fix</option>
+              <option>legal.review</option>
+              <option>medical.scribe</option>
+            </select>
+            <select class="filter-select">
+              <option>All Statuses</option>
+              <option>Completed</option>
+              <option>Escalated</option>
+              <option>Failed</option>
+              <option>Claim Filed</option>
+            </select>
+            <div class="date-picker">
+              <span>Last 30 days</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <path d="M6 9l6 6 6-6"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="history-summary">
+          <div class="summary-stat">
+            <span class="summary-value">2,341</span>
+            <span class="summary-label">Total Outcomes</span>
+          </div>
+          <div class="summary-stat">
+            <span class="summary-value">$11,204</span>
+            <span class="summary-label">Total Spend</span>
+          </div>
+          <div class="summary-stat">
+            <span class="summary-value">93.7%</span>
+            <span class="summary-label">Success Rate</span>
+          </div>
+          <div class="summary-stat">
+            <span class="summary-value">3</span>
+            <span class="summary-label">Claims Filed</span>
+          </div>
+        </div>
+
+        <div class="history-table-container">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Cost</th>
+                <th>Duration</th>
+                <th>Claim</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>out_x9y8z7</code></td>
+                <td><span class="type-badge">code.review</span></td>
+                <td>PR #1234 - Add user authentication</td>
+                <td><span class="status-badge success">Completed</span></td>
+                <td>$1.50</td>
+                <td>8 min</td>
+                <td>-</td>
+                <td>Jan 18, 10:23 AM</td>
+              </tr>
+              <tr>
+                <td><code>out_a1b2c3</code></td>
+                <td><span class="type-badge">legal.review</span></td>
+                <td>Acme Corp - Vendor NDA</td>
+                <td><span class="status-badge success">Completed</span></td>
+                <td>$12.00</td>
+                <td>15 min</td>
+                <td>-</td>
+                <td>Jan 18, 9:45 AM</td>
+              </tr>
+              <tr>
+                <td><code>out_d4e5f6</code></td>
+                <td><span class="type-badge">cs.resolve</span></td>
+                <td>Order #5678 - Shipping inquiry</td>
+                <td><span class="status-badge escalated">Escalated</span></td>
+                <td>$0.22</td>
+                <td>3 min</td>
+                <td>-</td>
+                <td>Jan 18, 9:12 AM</td>
+              </tr>
+              <tr class="claim-row">
+                <td><code>out_g7h8i9</code></td>
+                <td><span class="type-badge">legal.draft_msa</span></td>
+                <td>TechCorp - Services Agreement ($500K deal)</td>
+                <td><span class="status-badge claim">Claim Filed</span></td>
+                <td>$185.00</td>
+                <td>22 min</td>
+                <td><a href="#" class="claim-link">CLM-001 ($2,500)</a></td>
+                <td>Jan 15, 2:30 PM</td>
+              </tr>
+              <tr>
+                <td><code>out_j0k1l2</code></td>
+                <td><span class="type-badge">medical.scribe</span></td>
+                <td>Patient encounter - Dr. Smith</td>
+                <td><span class="status-badge success">Completed</span></td>
+                <td>$2.50</td>
+                <td>Real-time</td>
+                <td>-</td>
+                <td>Jan 15, 11:00 AM</td>
+              </tr>
+              <tr>
+                <td><code>out_m3n4o5</code></td>
+                <td><span class="type-badge">code.fix</span></td>
+                <td>Bug #892 - Login timeout issue</td>
+                <td><span class="status-badge success">Completed</span></td>
+                <td>$4.20</td>
+                <td>35 min</td>
+                <td>-</td>
+                <td>Jan 14, 4:15 PM</td>
+              </tr>
+              <tr class="claim-row">
+                <td><code>out_p6q7r8</code></td>
+                <td><span class="type-badge">code.review</span></td>
+                <td>PR #1198 - Payment processing (critical path)</td>
+                <td><span class="status-badge claim">Claim Filed</span></td>
+                <td>$45.00</td>
+                <td>12 min</td>
+                <td><a href="#" class="claim-link">CLM-002 ($850)</a></td>
+                <td>Jan 12, 10:30 AM</td>
+              </tr>
+              <tr>
+                <td><code>out_s9t0u1</code></td>
+                <td><span class="type-badge">cs.resolve</span></td>
+                <td>Refund request - Order #4521</td>
+                <td><span class="status-badge success">Completed</span></td>
+                <td>$0.45</td>
+                <td>2 min</td>
+                <td>-</td>
+                <td>Jan 12, 9:00 AM</td>
+              </tr>
+              <tr>
+                <td><code>out_v2w3x4</code></td>
+                <td><span class="type-badge">legal.summarize</span></td>
+                <td>Globex - Partnership Agreement</td>
+                <td><span class="status-badge success">Completed</span></td>
+                <td>$5.00</td>
+                <td>6 min</td>
+                <td>-</td>
+                <td>Jan 11, 3:45 PM</td>
+              </tr>
+              <tr class="claim-row">
+                <td><code>out_y5z6a7</code></td>
+                <td><span class="type-badge">legal.draft_nda</span></td>
+                <td>Initech - Mutual NDA (IP-sensitive)</td>
+                <td><span class="status-badge claim">Claim Filed</span></td>
+                <td>$65.00</td>
+                <td>10 min</td>
+                <td><a href="#" class="claim-link">CLM-003 ($1,200)</a></td>
+                <td>Jan 8, 11:20 AM</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          <button class="pagination-btn" disabled>&larr; Previous</button>
+          <span class="pagination-info">Showing 1-10 of 2,341</span>
+          <button class="pagination-btn">Next &rarr;</button>
+        </div>
+      </div>
+    </main>
+
+    <!-- Launch Success Modal -->
+    <div class="modal" id="success-modal">
+      <div class="modal-content">
+        <div class="modal-icon success">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+            <polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+        </div>
+        <h2>Outcome Launched!</h2>
+        <p>Your cs.resolve outcome is now active and processing requests.</p>
+        <div class="modal-stats">
+          <div class="modal-stat">
+            <span class="stat-value">$0.47</span>
+            <span class="stat-label">Est. Cost/Outcome</span>
+          </div>
+          <div class="modal-stat">
+            <span class="stat-value">~10,600</span>
+            <span class="stat-label">Est. Monthly</span>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="closeModal()">View Dashboard</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

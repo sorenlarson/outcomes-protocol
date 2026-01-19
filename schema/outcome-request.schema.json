@@ -1,0 +1,581 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://outcomes-protocol.com/schema/outcome-request.schema.json",
+  "title": "Outcome Request",
+  "description": "Schema for requesting an AI outcome from the Outcomes Protocol marketplace",
+  "type": "object",
+  "required": ["request_id", "outcome_type", "specification", "success_criteria"],
+  "properties": {
+    "request_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for this outcome request"
+    },
+    "outcome_type": {
+      "type": "string",
+      "pattern": "^[a-z]+\\.[a-z_]+$",
+      "description": "Outcome type from the taxonomy (e.g., 'cs.resolve', 'code.review')",
+      "examples": ["cs.resolve", "code.review", "legal.review", "medical.scribe"]
+    },
+    "specification": {
+      "$ref": "#/$defs/specification",
+      "description": "What the buyer wants to achieve"
+    },
+    "context_sources": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/context_source" },
+      "description": "Information sources available for outcome completion"
+    },
+    "tools": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/tool" },
+      "description": "Tools the provider may use"
+    },
+    "success_criteria": {
+      "$ref": "#/$defs/success_criteria",
+      "description": "Measurable conditions for outcome success"
+    },
+    "delivery_constraints": {
+      "$ref": "#/$defs/delivery_constraints",
+      "description": "Time and resource bounds for delivery"
+    },
+    "escalation_policy": {
+      "$ref": "#/$defs/escalation_policy",
+      "description": "Rules for human handoff"
+    },
+    "bid_strategy": {
+      "$ref": "#/$defs/bid_strategy",
+      "description": "Pricing and budget configuration"
+    },
+    "guarantee_terms": {
+      "$ref": "#/$defs/guarantee_terms",
+      "description": "Risk allocation and coverage"
+    },
+    "execution_preferences": {
+      "$ref": "#/$defs/execution_preferences",
+      "description": "Preferences for which execution engines can handle this request"
+    },
+    "metadata": {
+      "$ref": "#/$defs/metadata",
+      "description": "Additional tracking information"
+    }
+  },
+  "$defs": {
+    "specification": {
+      "type": "object",
+      "required": ["objective"],
+      "properties": {
+        "objective": {
+          "type": "string",
+          "minLength": 10,
+          "description": "Clear statement of what to achieve"
+        },
+        "constraints": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Must/must not requirements"
+        },
+        "preferences": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Should/should not preferences"
+        }
+      }
+    },
+    "context_source": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["inline", "url", "mcp_server", "file_reference"],
+          "description": "How context is provided"
+        },
+        "content": {
+          "type": "string",
+          "description": "Direct content (for inline type)"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL to fetch (for url type)"
+        },
+        "config": {
+          "type": "object",
+          "description": "Configuration for MCP server or file reference"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Additional context about the source"
+        }
+      }
+    },
+    "tool": {
+      "type": "object",
+      "required": ["name", "type"],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Tool identifier"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["mcp_server", "api", "function"],
+          "description": "Tool type"
+        },
+        "config": {
+          "type": "object",
+          "description": "Tool-specific configuration"
+        },
+        "permissions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Allowed operations"
+        }
+      }
+    },
+    "success_criteria": {
+      "type": "object",
+      "required": ["required"],
+      "properties": {
+        "required": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/criterion" },
+          "minItems": 1,
+          "description": "All must pass for success"
+        },
+        "optional": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/criterion" },
+          "description": "Tracked but not required"
+        }
+      }
+    },
+    "criterion": {
+      "type": "object",
+      "required": ["metric", "operator", "value"],
+      "properties": {
+        "metric": {
+          "type": "string",
+          "description": "Name of the metric"
+        },
+        "operator": {
+          "type": "string",
+          "enum": ["eq", "neq", "gt", "gte", "lt", "lte", "contains", "matches"],
+          "description": "Comparison operator"
+        },
+        "value": {
+          "description": "Expected value or threshold"
+        }
+      }
+    },
+    "delivery_constraints": {
+      "type": "object",
+      "properties": {
+        "max_latency_seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 86400,
+          "description": "Maximum time to deliver outcome"
+        },
+        "latency_preference": {
+          "type": "string",
+          "enum": ["fastest", "balanced", "cost_optimized"],
+          "default": "balanced",
+          "description": "Speed vs. cost preference"
+        },
+        "deadline": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Absolute deadline for completion"
+        },
+        "deadline_type": {
+          "type": "string",
+          "enum": ["hard", "soft"],
+          "default": "soft",
+          "description": "Whether deadline triggers auto-escalation"
+        },
+        "max_compute_budget": {
+          "type": "object",
+          "properties": {
+            "tokens": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Maximum tokens to consume"
+            },
+            "dollars": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Maximum compute cost"
+            }
+          }
+        },
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10,
+          "default": 3,
+          "description": "Maximum retry attempts"
+        },
+        "checkpoint_interval_seconds": {
+          "type": "integer",
+          "minimum": 10,
+          "description": "Interval for progress checkpoints"
+        }
+      }
+    },
+    "escalation_policy": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether escalation is allowed"
+        },
+        "triggers": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/escalation_trigger" },
+          "description": "Conditions that trigger escalation"
+        },
+        "handoff": {
+          "$ref": "#/$defs/handoff_config",
+          "description": "How to hand off to humans"
+        },
+        "partial_billing": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "model": {
+              "type": "string",
+              "enum": ["percentage_complete", "fixed_triage_fee", "none"],
+              "default": "percentage_complete"
+            }
+          }
+        }
+      }
+    },
+    "escalation_trigger": {
+      "type": "object",
+      "required": ["type", "action"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["confidence_threshold", "max_attempts", "timeout", "explicit_request", "policy_violation", "out_of_scope"],
+          "description": "What triggers escalation"
+        },
+        "threshold": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "For confidence_threshold type"
+        },
+        "attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "For max_attempts type"
+        },
+        "seconds": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "For timeout type"
+        },
+        "patterns": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "For explicit_request type"
+        },
+        "action": {
+          "type": "string",
+          "enum": ["escalate", "retry", "fail"],
+          "description": "What to do when triggered"
+        }
+      }
+    },
+    "handoff_config": {
+      "type": "object",
+      "properties": {
+        "destination": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["webhook", "queue", "email", "zendesk", "intercom", "salesforce"],
+              "description": "Destination type"
+            },
+            "config": {
+              "type": "object",
+              "description": "Destination-specific configuration"
+            }
+          }
+        },
+        "include_summary": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include AI-generated summary"
+        },
+        "include_transcript": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include full conversation transcript"
+        },
+        "include_context": {
+          "type": "boolean",
+          "default": true,
+          "description": "Include original context"
+        },
+        "summary_format": {
+          "type": "string",
+          "enum": ["structured", "narrative"],
+          "default": "structured"
+        },
+        "priority_mapping": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "enum": ["low", "normal", "high", "urgent"]
+          }
+        }
+      }
+    },
+    "bid_strategy": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["max_outcome_price", "target_cost", "return_on_spend", "maximize_throughput", "minimize_cost"],
+          "description": "Bid strategy type"
+        },
+        "budget": {
+          "type": "object",
+          "properties": {
+            "total": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Total budget amount"
+            },
+            "period": {
+              "type": "string",
+              "enum": ["hourly", "daily", "weekly", "monthly", "total"],
+              "description": "Budget period"
+            },
+            "currency": {
+              "type": "string",
+              "default": "USD",
+              "description": "Currency code"
+            }
+          }
+        },
+        "bid_amount": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Bid amount per outcome"
+        },
+        "target_roas": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Target return on ad spend (for return_on_spend type)"
+        },
+        "floor_price": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Minimum bid amount"
+        },
+        "ceiling_price": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Maximum bid amount"
+        },
+        "optimization_goal": {
+          "type": "string",
+          "enum": ["cost", "quality", "speed"],
+          "description": "What to optimize for"
+        },
+        "auto_bid": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": false
+            },
+            "learning_period_outcomes": {
+              "type": "integer",
+              "minimum": 10,
+              "default": 50
+            }
+          }
+        }
+      }
+    },
+    "guarantee_terms": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["none", "basic", "standard", "full"],
+          "default": "basic",
+          "description": "Guarantee coverage level"
+        },
+        "failure_coverage": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "default": true
+            },
+            "max_payout": {
+              "type": "number",
+              "minimum": 0,
+              "description": "Maximum payout amount"
+            },
+            "payout_conditions": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "required": ["condition", "payout_type"],
+                "properties": {
+                  "condition": {
+                    "type": "string",
+                    "enum": ["outcome_failed", "outcome_caused_damage", "sla_breach"]
+                  },
+                  "payout_type": {
+                    "type": "string",
+                    "enum": ["refund", "fixed", "actual_damages"]
+                  },
+                  "amount": {
+                    "type": "number",
+                    "minimum": 0
+                  }
+                }
+              }
+            },
+            "claim_window_days": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 365,
+              "default": 30
+            },
+            "claim_process": {
+              "type": "string",
+              "enum": ["automatic", "manual_review"],
+              "default": "automatic"
+            }
+          }
+        },
+        "risk_pricing": {
+          "type": "object",
+          "properties": {
+            "accept_market_price": {
+              "type": "boolean",
+              "default": true,
+              "description": "Accept dynamically priced risk premiums"
+            },
+            "max_premium_percent": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "description": "Maximum acceptable risk premium as percentage"
+            },
+            "risk_factors": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["context_complexity", "verification_horizon", "provider_track_record", "outcome_type_history"]
+              }
+            },
+            "outcomes_contract": {
+              "type": "object",
+              "description": "Future: risk market integration",
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": false
+                },
+                "settlement_oracle": {
+                  "type": "string"
+                },
+                "contract_terms": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        "sla": {
+          "type": "object",
+          "properties": {
+            "uptime_percent": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "response_time_p95_seconds": {
+              "type": "number",
+              "minimum": 0
+            },
+            "breach_compensation": {
+              "type": "string",
+              "enum": ["credit", "refund"]
+            }
+          }
+        }
+      }
+    },
+    "execution_preferences": {
+      "type": "object",
+      "description": "Preferences for which execution engines (model + harness combinations) can handle this request",
+      "properties": {
+        "allowed_engines": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Whitelist of allowed execution engines (supports wildcards). If empty, all engines allowed."
+        },
+        "blocked_engines": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Blacklist of blocked execution engines (supports wildcards)"
+        },
+        "preferred_engine": {
+          "type": "string",
+          "description": "Preferred engine gets tiebreaker advantage in selection"
+        },
+        "require_specific_engine": {
+          "type": "string",
+          "description": "If set, only this specific engine can handle the request"
+        },
+        "capability_requirements": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Required capabilities (e.g., 'code_execution', 'web_browsing', 'image_generation')"
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "buyer_id": {
+          "type": "string",
+          "description": "Buyer identifier"
+        },
+        "correlation_id": {
+          "type": "string",
+          "description": "External correlation ID"
+        },
+        "tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Custom tags for categorization"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["low", "normal", "high", "urgent"],
+          "default": "normal"
+        }
+      }
+    }
+  }
+}

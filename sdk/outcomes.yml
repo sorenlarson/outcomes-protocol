@@ -1,0 +1,334 @@
+# Outcomes Protocol Configuration
+# Place this file in your project's .claude/ directory
+#
+# This configuration defines how your Claude agent handles outcome requests
+# from the Outcomes Protocol marketplace.
+
+# =============================================================================
+# EXECUTION ENGINE IDENTITY
+# =============================================================================
+execution_engine:
+  # Unique engine identifier (assigned by marketplace)
+  id: "claude-code-acme-support"
+
+  # Human-readable engine name
+  name: "Acme Support Engine"
+
+  # Engine version (for tracking deployments)
+  version: "1.2.0"
+
+  # Model and harness information
+  model: "claude-opus-4"
+  model_version: "claude-opus-4-20250115"
+  harness: "claude-code"
+  harness_version: "2.1.0"
+  vendor: "anthropic"
+
+  # Engine capabilities
+  capabilities:
+    - "code_execution"
+    - "web_browsing"
+    - "mcp_integration"
+
+  # Engine metadata
+  metadata:
+    description: "AI-powered customer support for Acme Corp"
+    contact: "support-engineering@acme.com"
+    documentation: "https://docs.acme.com/ai-support"
+
+# =============================================================================
+# SUPPORTED OUTCOMES
+# =============================================================================
+outcomes:
+  # Customer Service - Resolve Inquiry
+  - type: "cs.resolve"
+    enabled: true
+    config:
+      # Maximum time to attempt resolution
+      max_latency_seconds: 300
+
+      # Default effort level (minimal, standard, thorough, exhaustive)
+      default_effort: "standard"
+
+      # Model to use for this outcome type
+      model: "claude-3-opus"
+
+      # Maximum tokens per execution
+      max_tokens: 20000
+
+      # Custom instructions for this outcome type
+      system_prompt: |
+        You are a helpful customer support agent for Acme Corp.
+        Your goal is to resolve customer inquiries efficiently and empathetically.
+        Always verify customer identity before sharing account details.
+        If you cannot resolve an issue, escalate with a detailed summary.
+
+  # Customer Service - Triage
+  - type: "cs.triage"
+    enabled: true
+    config:
+      max_latency_seconds: 30
+      default_effort: "minimal"
+      model: "claude-3-haiku"
+      max_tokens: 4000
+
+  # Customer Service - Escalation
+  - type: "cs.escalate"
+    enabled: true
+    config:
+      max_latency_seconds: 60
+      default_effort: "standard"
+      model: "claude-3-sonnet"
+      max_tokens: 8000
+
+# =============================================================================
+# CONTEXT SOURCES (MCP SERVERS)
+# =============================================================================
+context_sources:
+  # Customer Relationship Management
+  crm:
+    type: "mcp_server"
+    server: "crm.acme.internal"
+    port: 8080
+    auth:
+      type: "api_key"
+      key: "${CRM_API_KEY}"
+    tools:
+      - "get_customer"
+      - "get_customer_history"
+      - "get_loyalty_status"
+      - "update_customer_notes"
+
+  # Order Management System
+  orders:
+    type: "mcp_server"
+    server: "orders.acme.internal"
+    port: 8081
+    auth:
+      type: "oauth2"
+      client_id: "${ORDERS_CLIENT_ID}"
+      client_secret: "${ORDERS_CLIENT_SECRET}"
+    tools:
+      - "get_order"
+      - "get_order_history"
+      - "get_shipment_status"
+      - "process_refund"
+      - "apply_discount"
+      - "cancel_order"
+
+  # Knowledge Base
+  knowledge:
+    type: "mcp_server"
+    server: "kb.acme.internal"
+    port: 8082
+    tools:
+      - "search_articles"
+      - "get_article"
+      - "get_faq"
+      - "get_policy"
+
+# =============================================================================
+# TOOL PERMISSIONS
+# =============================================================================
+tools:
+  # Allowed tool patterns (supports wildcards)
+  allowed:
+    - "crm.get_*"           # Read customer data
+    - "crm.update_customer_notes"  # Update notes only
+    - "orders.get_*"        # Read order data
+    - "orders.process_refund"  # Process refunds (with limits)
+    - "orders.apply_discount"  # Apply discounts (with limits)
+    - "knowledge.*"         # Full knowledge base access
+
+  # Explicitly denied tools
+  denied:
+    - "crm.delete_*"        # Never delete customer data
+    - "orders.cancel_order" # Require human approval for cancellation
+    - "*.admin_*"           # No admin operations
+
+  # Tool-specific limits
+  limits:
+    "orders.process_refund":
+      max_amount: 50.00
+      require_reason: true
+      allowed_reasons:
+        - "damaged_item"
+        - "not_as_described"
+        - "late_delivery"
+        - "customer_service_gesture"
+
+    "orders.apply_discount":
+      allowed_codes:
+        - "SORRY10"
+        - "LOYALTY15"
+        - "COMEBACK20"
+      max_discount_percent: 20
+
+# =============================================================================
+# ESCALATION POLICY
+# =============================================================================
+escalation:
+  enabled: true
+
+  # Conditions that trigger escalation
+  triggers:
+    # Confidence threshold
+    - type: "confidence_threshold"
+      threshold: 0.70
+      action: "escalate"
+
+    # Customer explicitly requests human
+    - type: "explicit_request"
+      patterns:
+        - "speak to human"
+        - "talk to agent"
+        - "real person"
+        - "supervisor"
+        - "manager"
+      action: "escalate"
+
+    # Out of scope situations
+    - type: "out_of_scope"
+      conditions:
+        - "refund_amount > 50"
+        - "legal_threat_detected"
+        - "fraud_suspected"
+        - "complaint_regulatory"
+      action: "escalate"
+
+    # Maximum attempts exceeded
+    - type: "max_attempts"
+      attempts: 3
+      action: "escalate"
+
+  # Handoff destinations
+  destinations:
+    # Primary: Zendesk
+    - type: "zendesk"
+      priority: 1
+      config:
+        subdomain: "${ZENDESK_SUBDOMAIN}"
+        api_token: "${ZENDESK_API_TOKEN}"
+        default_group: "tier2_support"
+        priority_mapping:
+          high_value_customer: "urgent"
+          frustrated_sentiment: "high"
+          default: "normal"
+
+    # Fallback: Webhook
+    - type: "webhook"
+      priority: 2
+      config:
+        url: "${ESCALATION_WEBHOOK_URL}"
+        method: "POST"
+        headers:
+          Authorization: "Bearer ${ESCALATION_API_KEY}"
+
+  # What to include in handoff
+  handoff_content:
+    include_summary: true
+    include_transcript: true
+    include_customer_context: true
+    include_attempted_actions: true
+    include_recommended_resolution: true
+    summary_format: "structured"  # or "narrative"
+
+  # Partial billing for escalated outcomes
+  partial_billing:
+    enabled: true
+    model: "fixed_triage_fee"  # or "percentage_complete"
+    triage_fee: 0.05
+
+# =============================================================================
+# CONVERSIONS API
+# =============================================================================
+conversions:
+  # API endpoint
+  api_endpoint: "https://api.outcomes-protocol.com/v1/events"
+
+  # Authentication
+  api_key: "${OUTCOMES_API_KEY}"
+
+  # Automatic reporting
+  auto_report: true
+
+  # Events to report automatically
+  auto_report_events:
+    - "outcome.completed"
+    - "outcome.failed"
+    - "outcome.escalated"
+
+  # Retry configuration
+  retry:
+    max_attempts: 3
+    backoff_seconds: [1, 5, 15]
+
+  # Batching (for high-volume providers)
+  batching:
+    enabled: false
+    max_batch_size: 100
+    flush_interval_seconds: 60
+
+# =============================================================================
+# LOGGING & MONITORING
+# =============================================================================
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+
+  # Log destinations
+  destinations:
+    - type: "console"
+    - type: "file"
+      path: "/var/log/outcomes/provider.log"
+      rotation: "daily"
+
+  # Sensitive data handling
+  redact_patterns:
+    - "credit_card"
+    - "ssn"
+    - "password"
+    - "api_key"
+
+# Metrics
+metrics:
+  enabled: true
+  endpoint: "https://metrics.acme.internal/outcomes"
+  flush_interval_seconds: 60
+
+# =============================================================================
+# DEVELOPMENT / TESTING
+# =============================================================================
+development:
+  # Enable mock mode (no real API calls)
+  mock_mode: false
+
+  # Simulated latency for testing
+  simulated_latency_ms: 0
+
+  # Override conversions API for testing
+  conversions_override:
+    api_endpoint: "${DEV_CONVERSIONS_ENDPOINT}"
+
+# =============================================================================
+# ENVIRONMENT-SPECIFIC OVERRIDES
+# =============================================================================
+# These can be set via OUTCOMES_ENV environment variable
+environments:
+  production:
+    logging:
+      level: "WARNING"
+    development:
+      mock_mode: false
+
+  staging:
+    logging:
+      level: "INFO"
+    conversions:
+      api_endpoint: "https://staging-api.outcomes-protocol.com/v1/events"
+
+  development:
+    logging:
+      level: "DEBUG"
+    development:
+      mock_mode: true
+      simulated_latency_ms: 100

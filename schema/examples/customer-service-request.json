@@ -1,0 +1,227 @@
+{
+  "$schema": "../outcome-request.schema.json",
+  "request_id": "550e8400-e29b-41d4-a716-446655440001",
+  "outcome_type": "cs.resolve",
+
+  "specification": {
+    "objective": "Resolve customer inquiry about order status and delivery delay",
+    "constraints": [
+      "Must verify customer identity before sharing order details",
+      "Must not offer refunds exceeding $50 without escalation",
+      "Must not make promises about delivery dates that cannot be verified"
+    ],
+    "preferences": [
+      "Should offer proactive compensation for delays over 3 days",
+      "Should use empathetic, friendly tone",
+      "Should provide tracking information when available"
+    ]
+  },
+
+  "context_sources": [
+    {
+      "type": "mcp_server",
+      "config": {
+        "server": "crm",
+        "tools": ["get_customer", "get_order_history", "get_loyalty_status"]
+      },
+      "metadata": {
+        "customer_id": "cust_abc123"
+      }
+    },
+    {
+      "type": "mcp_server",
+      "config": {
+        "server": "orders",
+        "tools": ["get_order", "get_shipment_status", "get_tracking"]
+      }
+    },
+    {
+      "type": "mcp_server",
+      "config": {
+        "server": "knowledge",
+        "tools": ["search_articles", "get_policy", "get_faq"]
+      }
+    }
+  ],
+
+  "tools": [
+    {
+      "name": "order_lookup",
+      "type": "mcp_server",
+      "config": {
+        "server": "orders",
+        "tools": ["get_order", "get_shipment_status"]
+      },
+      "permissions": ["read"]
+    },
+    {
+      "name": "process_refund",
+      "type": "api",
+      "config": {
+        "endpoint": "https://api.store.com/refunds",
+        "method": "POST",
+        "auth": {
+          "type": "bearer",
+          "token_ref": "refund_api_token"
+        }
+      },
+      "permissions": ["refund_max_50"]
+    },
+    {
+      "name": "apply_discount",
+      "type": "api",
+      "config": {
+        "endpoint": "https://api.store.com/discounts",
+        "method": "POST"
+      },
+      "permissions": ["approved_codes_only"]
+    },
+    {
+      "name": "send_tracking_email",
+      "type": "api",
+      "config": {
+        "endpoint": "https://api.store.com/notifications/email",
+        "method": "POST"
+      },
+      "permissions": ["tracking_template"]
+    }
+  ],
+
+  "success_criteria": {
+    "required": [
+      {
+        "metric": "resolution_confirmed",
+        "operator": "eq",
+        "value": true
+      },
+      {
+        "metric": "customer_satisfaction",
+        "operator": "gte",
+        "value": 4
+      },
+      {
+        "metric": "first_response_seconds",
+        "operator": "lte",
+        "value": 30
+      }
+    ],
+    "optional": [
+      {
+        "metric": "first_contact_resolution",
+        "operator": "eq",
+        "value": true
+      },
+      {
+        "metric": "upsell_opportunity_identified",
+        "operator": "eq",
+        "value": true
+      }
+    ]
+  },
+
+  "delivery_constraints": {
+    "max_latency_seconds": 300,
+    "latency_preference": "fastest",
+    "deadline_type": "soft",
+    "max_compute_budget": {
+      "tokens": 20000,
+      "dollars": 0.50
+    },
+    "max_attempts": 3,
+    "checkpoint_interval_seconds": 30
+  },
+
+  "escalation_policy": {
+    "enabled": true,
+    "triggers": [
+      {
+        "type": "confidence_threshold",
+        "threshold": 0.70,
+        "action": "escalate"
+      },
+      {
+        "type": "explicit_request",
+        "patterns": ["speak to human", "talk to agent", "real person", "supervisor"],
+        "action": "escalate"
+      },
+      {
+        "type": "out_of_scope",
+        "conditions": ["refund_amount > 50", "legal_threat_detected"],
+        "action": "escalate"
+      },
+      {
+        "type": "max_attempts",
+        "attempts": 3,
+        "action": "escalate"
+      }
+    ],
+    "handoff": {
+      "destination": {
+        "type": "zendesk",
+        "config": {
+          "subdomain": "acme-support",
+          "group_id": "tier2_support",
+          "priority_field": "priority"
+        }
+      },
+      "include_summary": true,
+      "include_transcript": true,
+      "include_context": true,
+      "summary_format": "structured",
+      "priority_mapping": {
+        "high_value_customer": "urgent",
+        "frustrated_sentiment": "high",
+        "default": "normal"
+      }
+    },
+    "partial_billing": {
+      "enabled": true,
+      "model": "fixed_triage_fee"
+    }
+  },
+
+  "bid_strategy": {
+    "type": "target_cost",
+    "budget": {
+      "total": 5000.00,
+      "period": "monthly",
+      "currency": "USD"
+    },
+    "bid_amount": 0.45,
+    "floor_price": 0.15,
+    "ceiling_price": 2.00,
+    "optimization_goal": "cost",
+    "auto_bid": {
+      "enabled": true,
+      "learning_period_outcomes": 100
+    }
+  },
+
+  "guarantee_terms": {
+    "level": "basic",
+    "failure_coverage": {
+      "enabled": true,
+      "max_payout": 50.00,
+      "payout_conditions": [
+        {
+          "condition": "outcome_failed",
+          "payout_type": "refund"
+        }
+      ],
+      "claim_window_days": 7,
+      "claim_process": "automatic"
+    },
+    "sla": {
+      "uptime_percent": 99.9,
+      "response_time_p95_seconds": 5,
+      "breach_compensation": "credit"
+    }
+  },
+
+  "metadata": {
+    "buyer_id": "buyer_acme_retail",
+    "correlation_id": "ticket_12345",
+    "tags": ["order_inquiry", "delivery_delay", "live_chat"],
+    "priority": "normal"
+  }
+}

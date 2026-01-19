@@ -1,0 +1,248 @@
+{
+  "$schema": "../outcome-request.schema.json",
+  "request_id": "550e8400-e29b-41d4-a716-446655440002",
+  "outcome_type": "code.review",
+
+  "specification": {
+    "objective": "Review pull request #456 for bugs, security issues, style violations, and maintainability concerns",
+    "constraints": [
+      "Must check for SQL injection vulnerabilities",
+      "Must verify all error handling is complete",
+      "Must flag any hardcoded secrets or credentials",
+      "Must not auto-approve PRs touching authentication code"
+    ],
+    "preferences": [
+      "Should suggest performance improvements where obvious",
+      "Should note opportunities for code reuse",
+      "Should provide actionable, specific feedback",
+      "Should use encouraging tone for junior contributors"
+    ]
+  },
+
+  "context_sources": [
+    {
+      "type": "mcp_server",
+      "config": {
+        "server": "github",
+        "tools": [
+          "get_pull_request",
+          "get_diff",
+          "get_file_contents",
+          "get_commit_history",
+          "get_pr_comments"
+        ]
+      },
+      "metadata": {
+        "owner": "acme-corp",
+        "repo": "web-platform",
+        "pr_number": 456
+      }
+    },
+    {
+      "type": "mcp_server",
+      "config": {
+        "server": "codebase_index",
+        "tools": [
+          "search_code",
+          "get_symbol_definitions",
+          "get_symbol_references",
+          "get_file_tree"
+        ]
+      }
+    },
+    {
+      "type": "file_reference",
+      "config": {
+        "paths": [
+          ".eslintrc.json",
+          ".prettierrc",
+          "CONTRIBUTING.md",
+          "docs/architecture.md",
+          "docs/security-guidelines.md"
+        ]
+      },
+      "metadata": {
+        "purpose": "coding_standards"
+      }
+    }
+  ],
+
+  "tools": [
+    {
+      "name": "github_review",
+      "type": "mcp_server",
+      "config": {
+        "server": "github",
+        "tools": ["create_review", "add_review_comment", "request_changes", "approve"]
+      },
+      "permissions": ["create_review", "add_comment", "request_changes", "approve_with_conditions"]
+    },
+    {
+      "name": "run_linter",
+      "type": "api",
+      "config": {
+        "endpoint": "https://ci.acme.com/api/lint",
+        "method": "POST"
+      },
+      "permissions": ["read_only"]
+    },
+    {
+      "name": "run_security_scan",
+      "type": "api",
+      "config": {
+        "endpoint": "https://ci.acme.com/api/security-scan",
+        "method": "POST"
+      },
+      "permissions": ["read_only"]
+    },
+    {
+      "name": "run_tests",
+      "type": "api",
+      "config": {
+        "endpoint": "https://ci.acme.com/api/test",
+        "method": "POST"
+      },
+      "permissions": ["read_only"]
+    }
+  ],
+
+  "success_criteria": {
+    "required": [
+      {
+        "metric": "review_completed",
+        "operator": "eq",
+        "value": true
+      },
+      {
+        "metric": "all_files_reviewed",
+        "operator": "eq",
+        "value": true
+      },
+      {
+        "metric": "no_false_positives_reported",
+        "operator": "eq",
+        "value": true
+      },
+      {
+        "metric": "actionable_comments_ratio",
+        "operator": "gte",
+        "value": 0.9
+      }
+    ],
+    "optional": [
+      {
+        "metric": "security_issues_found",
+        "operator": "gte",
+        "value": 0
+      },
+      {
+        "metric": "performance_suggestions_made",
+        "operator": "gte",
+        "value": 0
+      },
+      {
+        "metric": "author_satisfaction",
+        "operator": "gte",
+        "value": 4
+      }
+    ]
+  },
+
+  "delivery_constraints": {
+    "max_latency_seconds": 300,
+    "latency_preference": "fastest",
+    "deadline_type": "soft",
+    "max_compute_budget": {
+      "tokens": 50000,
+      "dollars": 2.00
+    },
+    "max_attempts": 2,
+    "checkpoint_interval_seconds": 60
+  },
+
+  "escalation_policy": {
+    "enabled": true,
+    "triggers": [
+      {
+        "type": "confidence_threshold",
+        "threshold": 0.75,
+        "action": "escalate"
+      },
+      {
+        "type": "out_of_scope",
+        "conditions": [
+          "security_finding_critical",
+          "changes_auth_system",
+          "changes_payment_flow",
+          "pr_size_lines > 1000"
+        ],
+        "action": "escalate"
+      }
+    ],
+    "handoff": {
+      "destination": {
+        "type": "github",
+        "config": {
+          "request_reviewers": ["@security-team", "@senior-engineers"],
+          "add_labels": ["needs-human-review", "security-review-required"]
+        }
+      },
+      "include_summary": true,
+      "summary_format": "structured"
+    },
+    "partial_billing": {
+      "enabled": true,
+      "model": "percentage_complete"
+    }
+  },
+
+  "bid_strategy": {
+    "type": "max_outcome_price",
+    "budget": {
+      "total": 2000.00,
+      "period": "monthly",
+      "currency": "USD"
+    },
+    "bid_amount": 2.00,
+    "ceiling_price": 5.00,
+    "optimization_goal": "quality",
+    "auto_bid": {
+      "enabled": true,
+      "learning_period_outcomes": 50
+    }
+  },
+
+  "guarantee_terms": {
+    "level": "standard",
+    "failure_coverage": {
+      "enabled": true,
+      "max_payout": 100.00,
+      "payout_conditions": [
+        {
+          "condition": "outcome_failed",
+          "description": "Review missed obvious bug that was in scope",
+          "payout_type": "refund"
+        },
+        {
+          "condition": "outcome_caused_damage",
+          "description": "Missed bug caused production incident",
+          "payout_type": "actual_damages",
+          "amount_cap": 100.00
+        }
+      ],
+      "claim_window_days": 14,
+      "claim_process": "manual_review"
+    },
+    "risk_pricing": {
+      "accept_market_price": true,
+      "max_premium_percent": 15
+    }
+  },
+
+  "metadata": {
+    "buyer_id": "buyer_acme_engineering",
+    "correlation_id": "pr_456_review",
+    "tags": ["pull_request", "backend", "api_changes"],
+    "priority": "high"
+  }
+}

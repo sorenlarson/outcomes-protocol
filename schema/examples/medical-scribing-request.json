@@ -1,0 +1,260 @@
+{
+  "$schema": "../outcome-request.schema.json",
+  "request_id": "550e8400-e29b-41d4-a716-446655440004",
+  "outcome_type": "medical.scribe",
+
+  "specification": {
+    "objective": "Generate clinical documentation from patient encounter transcript in SOAP note format",
+    "constraints": [
+      "Must capture all clinically relevant information from transcript",
+      "Must use standard medical terminology and abbreviations",
+      "Must not fabricate clinical findings not present in transcript",
+      "Must flag any safety concerns or critical findings immediately",
+      "Must maintain HIPAA compliance throughout"
+    ],
+    "preferences": [
+      "Should organize findings by body system in physical exam",
+      "Should suggest appropriate ICD-10 codes with confidence scores",
+      "Should highlight any medication interactions or allergies",
+      "Should include patient education points discussed"
+    ]
+  },
+
+  "context_sources": [
+    {
+      "type": "inline",
+      "content": "[Transcript of 20-minute patient encounter - ambient recording from office visit]",
+      "metadata": {
+        "encounter_type": "office_visit",
+        "visit_type": "follow_up",
+        "specialty": "internal_medicine",
+        "duration_minutes": 20,
+        "recording_type": "ambient",
+        "audio_quality": "good"
+      }
+    },
+    {
+      "type": "mcp_server",
+      "config": {
+        "server": "ehr",
+        "tools": [
+          "get_patient_demographics",
+          "get_problem_list",
+          "get_medication_list",
+          "get_allergy_list",
+          "get_recent_vitals",
+          "get_recent_labs",
+          "get_immunization_history"
+        ]
+      },
+      "metadata": {
+        "patient_mrn": "MRN123456",
+        "encounter_id": "ENC789"
+      }
+    },
+    {
+      "type": "mcp_server",
+      "config": {
+        "server": "templates",
+        "tools": [
+          "get_soap_template",
+          "get_specialty_template",
+          "get_documentation_guidelines"
+        ]
+      }
+    },
+    {
+      "type": "mcp_server",
+      "config": {
+        "server": "coding",
+        "tools": [
+          "search_icd10",
+          "search_cpt",
+          "get_coding_guidelines",
+          "validate_code_combination"
+        ]
+      }
+    }
+  ],
+
+  "tools": [
+    {
+      "name": "patient_lookup",
+      "type": "mcp_server",
+      "config": {
+        "server": "ehr",
+        "tools": ["get_patient_info", "get_medical_history"]
+      },
+      "permissions": ["read_phi_audit_logged"]
+    },
+    {
+      "name": "note_creation",
+      "type": "mcp_server",
+      "config": {
+        "server": "ehr",
+        "tools": ["create_note_draft", "save_note_draft"]
+      },
+      "permissions": ["create_draft_only"]
+    },
+    {
+      "name": "code_suggestion",
+      "type": "mcp_server",
+      "config": {
+        "server": "coding",
+        "tools": ["suggest_icd10", "suggest_cpt"]
+      },
+      "permissions": ["suggest_only"]
+    },
+    {
+      "name": "drug_interaction_check",
+      "type": "api",
+      "config": {
+        "endpoint": "https://clinical.acme.com/api/interactions",
+        "method": "POST"
+      },
+      "permissions": ["read_only"]
+    }
+  ],
+
+  "success_criteria": {
+    "required": [
+      {
+        "metric": "clinical_accuracy",
+        "operator": "gte",
+        "value": 0.98
+      },
+      {
+        "metric": "all_sections_complete",
+        "operator": "eq",
+        "value": true
+      },
+      {
+        "metric": "template_compliance",
+        "operator": "eq",
+        "value": true
+      },
+      {
+        "metric": "no_fabricated_findings",
+        "operator": "eq",
+        "value": true
+      }
+    ],
+    "optional": [
+      {
+        "metric": "coding_suggestions_provided",
+        "operator": "eq",
+        "value": true
+      },
+      {
+        "metric": "physician_edit_percentage",
+        "operator": "lte",
+        "value": 10
+      },
+      {
+        "metric": "physician_satisfaction",
+        "operator": "gte",
+        "value": 4
+      }
+    ]
+  },
+
+  "delivery_constraints": {
+    "max_latency_seconds": 900,
+    "latency_preference": "balanced",
+    "deadline_type": "soft",
+    "max_compute_budget": {
+      "tokens": 40000,
+      "dollars": 3.00
+    },
+    "max_attempts": 2,
+    "checkpoint_interval_seconds": 60
+  },
+
+  "escalation_policy": {
+    "enabled": true,
+    "triggers": [
+      {
+        "type": "confidence_threshold",
+        "threshold": 0.80,
+        "action": "escalate"
+      },
+      {
+        "type": "out_of_scope",
+        "conditions": [
+          "audio_quality_poor",
+          "critical_finding_detected",
+          "multiple_speakers_unclear",
+          "complex_medical_decision"
+        ],
+        "action": "escalate"
+      }
+    ],
+    "handoff": {
+      "destination": {
+        "type": "ehr_task",
+        "config": {
+          "task_type": "documentation_review",
+          "assign_to": "attending_physician",
+          "priority": "routine"
+        }
+      },
+      "include_summary": true,
+      "include_context": true,
+      "summary_format": "structured"
+    },
+    "partial_billing": {
+      "enabled": true,
+      "model": "percentage_complete"
+    }
+  },
+
+  "bid_strategy": {
+    "type": "target_cost",
+    "budget": {
+      "total": 15000.00,
+      "period": "monthly",
+      "currency": "USD"
+    },
+    "bid_amount": 2.50,
+    "floor_price": 1.00,
+    "ceiling_price": 8.00,
+    "optimization_goal": "quality",
+    "auto_bid": {
+      "enabled": true,
+      "learning_period_outcomes": 200
+    }
+  },
+
+  "guarantee_terms": {
+    "level": "standard",
+    "failure_coverage": {
+      "enabled": true,
+      "max_payout": 500.00,
+      "payout_conditions": [
+        {
+          "condition": "outcome_failed",
+          "description": "Note required significant physician correction (>20% changes)",
+          "payout_type": "refund"
+        }
+      ],
+      "claim_window_days": 7,
+      "claim_process": "automatic"
+    },
+    "risk_pricing": {
+      "accept_market_price": true,
+      "max_premium_percent": 15
+    },
+    "sla": {
+      "uptime_percent": 99.9,
+      "response_time_p95_seconds": 5,
+      "breach_compensation": "credit"
+    }
+  },
+
+  "metadata": {
+    "buyer_id": "buyer_acme_health_system",
+    "correlation_id": "encounter_ENC789_scribe",
+    "tags": ["office_visit", "internal_medicine", "follow_up", "ambient_scribe"],
+    "priority": "normal"
+  }
+}

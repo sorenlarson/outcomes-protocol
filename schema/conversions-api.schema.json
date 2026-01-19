@@ -1,0 +1,360 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://outcomes-protocol.com/schema/conversions-api.schema.json",
+  "title": "Conversions API Event",
+  "description": "Schema for events sent to the Conversions API (cAPI)",
+  "type": "object",
+  "required": ["event_id", "event_type", "event_time", "request_id"],
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Unique identifier for this event (for deduplication)"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "outcome.success",
+        "outcome.failure",
+        "outcome.partial",
+        "outcome.expired",
+        "guarantee.claim",
+        "guarantee.evidence",
+        "guarantee.withdraw",
+        "feedback.rating",
+        "feedback.correction",
+        "feedback.comment",
+        "outcome.viewed",
+        "outcome.used",
+        "outcome.superseded"
+      ],
+      "description": "Type of conversion event"
+    },
+    "event_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this event was recorded"
+    },
+    "event_source_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the underlying action occurred (may differ from event_time)"
+    },
+    "request_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Reference to the original outcome request"
+    },
+    "response_id": {
+      "type": "string",
+      "description": "Reference to the delivery response"
+    },
+    "buyer_id": {
+      "type": "string",
+      "description": "Buyer identifier"
+    },
+    "data": {
+      "type": "object",
+      "description": "Event-type specific data",
+      "oneOf": [
+        { "$ref": "#/$defs/outcome_event_data" },
+        { "$ref": "#/$defs/guarantee_claim_data" },
+        { "$ref": "#/$defs/feedback_rating_data" },
+        { "$ref": "#/$defs/feedback_correction_data" }
+      ]
+    },
+    "context": {
+      "type": "object",
+      "description": "Additional context about the event",
+      "properties": {
+        "source_system": {
+          "type": "string",
+          "description": "System that generated this event"
+        },
+        "source_event_id": {
+          "type": "string",
+          "description": "Original event ID in source system"
+        },
+        "user_agent": {
+          "type": "string",
+          "description": "SDK or integration identifier"
+        },
+        "ip_address": {
+          "type": "string",
+          "format": "ipv4",
+          "description": "Source IP (optional)"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "outcome_event_data": {
+      "type": "object",
+      "description": "Data for outcome.success, outcome.failure, outcome.partial events",
+      "properties": {
+        "success": {
+          "type": "boolean",
+          "description": "Whether outcome was successful"
+        },
+        "success_criteria_results": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "expected": {},
+              "actual": {},
+              "passed": { "type": "boolean" },
+              "failure_reason": { "type": "string" }
+            }
+          }
+        },
+        "overall_success": {
+          "type": "boolean"
+        },
+        "failure_category": {
+          "type": "string",
+          "description": "Category of failure for failed outcomes"
+        },
+        "failure_details": {
+          "type": "string",
+          "description": "Detailed failure explanation"
+        },
+        "impact": {
+          "type": "object",
+          "description": "Business impact of failure",
+          "properties": {
+            "customer_effort_score": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 7
+            },
+            "required_human_intervention": {
+              "type": "boolean"
+            },
+            "additional_cost_incurred": {
+              "type": "number",
+              "minimum": 0
+            }
+          }
+        },
+        "verification": {
+          "$ref": "#/$defs/verification"
+        },
+        "outcome_value": {
+          "$ref": "#/$defs/outcome_value"
+        }
+      }
+    },
+    "guarantee_claim_data": {
+      "type": "object",
+      "description": "Data for guarantee.claim events",
+      "required": ["claim_type", "requested_compensation"],
+      "properties": {
+        "claim_type": {
+          "type": "string",
+          "enum": ["outcome_failed", "outcome_caused_damage", "sla_breach"],
+          "description": "Type of claim being made"
+        },
+        "claim_description": {
+          "type": "string",
+          "description": "Detailed description of the claim"
+        },
+        "requested_compensation": {
+          "type": "object",
+          "required": ["amount", "currency"],
+          "properties": {
+            "amount": {
+              "type": "number",
+              "minimum": 0
+            },
+            "currency": {
+              "type": "string",
+              "default": "USD"
+            },
+            "breakdown": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number"
+              },
+              "description": "Breakdown of requested amount by category"
+            }
+          }
+        },
+        "evidence_summary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "evidence_id": { "type": "string" },
+              "type": {
+                "type": "string",
+                "enum": ["document", "invoice", "screenshot", "correspondence", "log", "other"]
+              },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "timeline": {
+          "type": "object",
+          "properties": {
+            "outcome_delivered": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "issue_discovered": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "claim_submitted": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        },
+        "related_outcomes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Other outcome IDs related to this claim"
+        }
+      }
+    },
+    "feedback_rating_data": {
+      "type": "object",
+      "description": "Data for feedback.rating events",
+      "properties": {
+        "overall_rating": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "dimension_ratings": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "description": "Ratings by dimension (accuracy, speed, clarity, etc.)"
+        },
+        "nps_score": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10,
+          "description": "Net Promoter Score"
+        },
+        "would_use_again": {
+          "type": "boolean"
+        },
+        "comments": {
+          "type": "string",
+          "description": "Free-text feedback"
+        },
+        "improvement_suggestions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "comparison": {
+          "type": "object",
+          "properties": {
+            "vs_previous_provider": {
+              "type": "string",
+              "enum": ["much_worse", "worse", "same", "better", "much_better"]
+            },
+            "vs_human_baseline": {
+              "type": "string",
+              "enum": ["much_worse", "worse", "comparable", "better", "much_better"]
+            }
+          }
+        }
+      }
+    },
+    "feedback_correction_data": {
+      "type": "object",
+      "description": "Data for feedback.correction events",
+      "required": ["correction_type", "original_content", "corrected_content"],
+      "properties": {
+        "correction_type": {
+          "type": "string",
+          "enum": ["factual_error", "formatting_error", "tone_issue", "missing_information", "wrong_action", "other"],
+          "description": "Category of correction"
+        },
+        "original_content": {
+          "type": "object",
+          "properties": {
+            "field": { "type": "string" },
+            "value": {}
+          }
+        },
+        "corrected_content": {
+          "type": "object",
+          "properties": {
+            "field": { "type": "string" },
+            "value": {}
+          }
+        },
+        "correction_reason": {
+          "type": "string"
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["minor", "moderate", "major", "critical"]
+        },
+        "caught_by": {
+          "type": "string",
+          "enum": ["automatic", "human_review", "customer_report", "audit"]
+        },
+        "customer_impact": {
+          "type": "string",
+          "enum": ["none", "minor_inconvenience", "significant", "severe"]
+        }
+      }
+    },
+    "verification": {
+      "type": "object",
+      "description": "How the outcome was verified",
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["automatic", "customer_survey", "human_review", "system_check", "time_based"],
+          "description": "Verification method used"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "verifier": {
+          "type": "string",
+          "description": "Who/what performed verification"
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Confidence in verification (0-1)"
+        }
+      }
+    },
+    "outcome_value": {
+      "type": "object",
+      "description": "Business value of the outcome",
+      "properties": {
+        "amount": {
+          "type": "number",
+          "description": "Monetary value"
+        },
+        "currency": {
+          "type": "string",
+          "default": "USD"
+        },
+        "value_type": {
+          "type": "string",
+          "enum": ["revenue", "cost_saved", "time_saved", "risk_avoided", "custom"],
+          "description": "Type of value"
+        },
+        "calculation_method": {
+          "type": "string",
+          "description": "How value was calculated"
+        }
+      }
+    }
+  }
+}

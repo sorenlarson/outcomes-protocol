@@ -1,0 +1,234 @@
+{
+  "$schema": "../outcome-request.schema.json",
+  "request_id": "550e8400-e29b-41d4-a716-446655440010",
+  "outcome_type": "legal.draft_nda",
+  "verification_model": "guarantee",
+
+  "specification": {
+    "objective": "Draft a mutual Non-Disclosure Agreement between Acme Corp and Widget Inc for a potential partnership discussion",
+    "constraints": [
+      "Must be mutual (both parties bound)",
+      "Must include standard confidentiality obligations",
+      "Must include 2-year term with 3-year survival of obligations",
+      "Must comply with Delaware law",
+      "Must include carve-outs for independently developed information",
+      "Must not include non-compete or non-solicitation clauses"
+    ],
+    "preferences": [
+      "Should use Acme Corp's standard NDA template structure",
+      "Should include clear definition of confidential information",
+      "Should specify permitted disclosures (legal requirements, advisors)",
+      "Should include return/destruction of materials clause"
+    ]
+  },
+
+  "context_sources": [
+    {
+      "type": "inline",
+      "content": {
+        "disclosing_party": {
+          "name": "Acme Corporation",
+          "jurisdiction": "Delaware",
+          "address": "123 Innovation Drive, Wilmington, DE 19801",
+          "contact": "legal@acme.com"
+        },
+        "receiving_party": {
+          "name": "Widget Inc",
+          "jurisdiction": "California",
+          "address": "456 Tech Boulevard, San Francisco, CA 94105",
+          "contact": "contracts@widget.io"
+        },
+        "purpose": "Evaluation of potential partnership for joint product development",
+        "term_years": 2,
+        "survival_years": 3
+      },
+      "metadata": {
+        "document_type": "nda_request",
+        "matter_id": "M-2025-0042"
+      }
+    },
+    {
+      "type": "mcp_server",
+      "config": {
+        "server": "clause_library",
+        "tools": [
+          "get_nda_template",
+          "get_standard_definitions",
+          "get_approved_clauses"
+        ]
+      }
+    },
+    {
+      "type": "mcp_server",
+      "config": {
+        "server": "legal_policies",
+        "tools": [
+          "get_nda_policy",
+          "get_jurisdiction_requirements"
+        ]
+      }
+    }
+  ],
+
+  "tools": [
+    {
+      "name": "document_drafting",
+      "type": "mcp_server",
+      "config": {
+        "server": "legal_drafting",
+        "tools": ["create_from_template", "merge_clauses", "validate_consistency"]
+      },
+      "permissions": ["draft"]
+    },
+    {
+      "name": "compliance_check",
+      "type": "mcp_server",
+      "config": {
+        "server": "legal_compliance",
+        "tools": ["check_jurisdiction_requirements", "validate_enforceability"]
+      },
+      "permissions": ["read"]
+    }
+  ],
+
+  "success_criteria": {
+    "required": [
+      {
+        "metric": "document_generated",
+        "operator": "eq",
+        "value": true
+      },
+      {
+        "metric": "all_required_clauses_present",
+        "operator": "eq",
+        "value": true
+      },
+      {
+        "metric": "party_information_correct",
+        "operator": "eq",
+        "value": true
+      },
+      {
+        "metric": "internal_consistency_check",
+        "operator": "eq",
+        "value": true
+      }
+    ],
+    "optional": [
+      {
+        "metric": "follows_template_structure",
+        "operator": "eq",
+        "value": true
+      }
+    ]
+  },
+
+  "delivery_constraints": {
+    "max_latency_seconds": 3600,
+    "latency_preference": "balanced",
+    "deadline_type": "soft",
+    "max_compute_budget": {
+      "tokens": 50000,
+      "dollars": 15.00
+    },
+    "max_attempts": 2
+  },
+
+  "escalation_policy": {
+    "enabled": true,
+    "triggers": [
+      {
+        "type": "out_of_scope",
+        "conditions": [
+          "unusual_jurisdiction_combination",
+          "conflicting_requirements",
+          "regulatory_complexity"
+        ],
+        "action": "escalate"
+      },
+      {
+        "type": "confidence_threshold",
+        "threshold": 0.8,
+        "action": "escalate"
+      }
+    ],
+    "handoff": {
+      "destination": {
+        "type": "webhook",
+        "config": {
+          "url": "https://legal.acme.com/api/drafting-queue",
+          "method": "POST"
+        }
+      },
+      "include_summary": true,
+      "include_context": true
+    },
+    "partial_billing": {
+      "enabled": true,
+      "model": "fixed_triage_fee"
+    }
+  },
+
+  "bid_strategy": {
+    "type": "max_outcome_price",
+    "budget": {
+      "total": 5000.00,
+      "period": "monthly",
+      "currency": "USD"
+    },
+    "bid_amount": 15.00,
+    "ceiling_price": 25.00,
+    "optimization_goal": "quality"
+  },
+
+  "guarantee_terms": {
+    "level": "standard",
+    "failure_coverage": {
+      "enabled": true,
+      "max_payout": 25000.00,
+      "payout_conditions": [
+        {
+          "condition": "missing_required_clause",
+          "description": "NDA missing clause required by specification or policy",
+          "payout_type": "refund"
+        },
+        {
+          "condition": "unenforceable_provision",
+          "description": "NDA contains provision unenforceable under specified jurisdiction",
+          "payout_type": "refund",
+          "requires_evidence": true
+        },
+        {
+          "condition": "defect_caused_damage",
+          "description": "Defect in NDA caused verifiable harm (e.g., failed to protect confidential information)",
+          "payout_type": "actual_damages",
+          "amount_cap": 25000.00,
+          "verification_required": true,
+          "requires_evidence": [
+            "Copy of executed NDA",
+            "Documentation of confidentiality breach",
+            "Evidence of damages incurred"
+          ]
+        }
+      ],
+      "claim_window_days": 730,
+      "claim_process": "manual_review"
+    },
+    "risk_pricing": {
+      "accept_market_price": true,
+      "max_premium_percent": 20,
+      "risk_factors": [
+        "jurisdiction_complexity",
+        "term_length",
+        "claim_window_length"
+      ]
+    }
+  },
+
+  "metadata": {
+    "buyer_id": "buyer_acme_legal",
+    "correlation_id": "nda_widget_partnership_2025",
+    "tags": ["nda", "mutual", "partnership", "guarantee_backed"],
+    "matter_id": "M-2025-0042"
+  }
+}
