@@ -1001,6 +1001,7 @@
               <h4>Architecture</h4>
               <a href="#" class="docs-nav-item" data-section="architecture">System Design</a>
               <a href="#" class="docs-nav-item" data-section="model-bidding">Model-Level Bidding</a>
+              <a href="#" class="docs-nav-item" data-section="sdk">SDK Integration</a>
             </div>
             <div class="docs-nav-section">
               <h4>Verticals</h4>
@@ -1373,6 +1374,73 @@
     "capability_requirements": ["code_execution"]
   }
 }</pre>
+            </section>
+
+            <!-- SDK Integration -->
+            <section class="docs-section" id="section-sdk">
+              <h1>SDK Integration</h1>
+              <p>Integrate outcome requests into your application using the Claude Agent SDK.</p>
+
+              <h2>Outcome Request</h2>
+              <p>An outcome request specifies what you want, how to verify success, and your pricing constraints:</p>
+              <pre class="docs-code">{
+  "outcome_type": "cs.resolve",
+  "specification": {
+    "objective": "Resolve customer inquiry about order status",
+    "constraints": ["Must not offer refunds over $50"]
+  },
+  "success_criteria": {
+    "required": [
+      { "metric": "resolution_confirmed", "operator": "eq", "value": true },
+      { "metric": "customer_satisfaction", "operator": "gte", "value": 4 }
+    ]
+  },
+  "delivery_constraints": {
+    "max_latency_seconds": 300,
+    "latency_preference": "fastest"
+  },
+  "bid_strategy": {
+    "type": "target_cost",
+    "bid_amount": 0.45
+  }
+}</pre>
+
+              <h2>Python Example</h2>
+              <p>Execute an outcome and report results via the Conversions API:</p>
+              <pre class="docs-code">from outcomes_provider import OutcomesEngine
+
+# Initialize from config
+engine = OutcomesEngine.from_config(".claude/outcomes.yml")
+
+# Execute an outcome
+response = await engine.execute({
+    "outcome_type": "cs.resolve",
+    "specification": {
+        "objective": "Resolve customer inquiry",
+        "customer_id": "cust_abc123"
+    },
+    "bid_strategy": {"type": "target_cost", "bid_amount": 0.45}
+})
+
+# Response includes status, result, and delivery metrics
+print(response["status"])        # "completed" | "failed" | "escalated"
+print(response["delivery_metrics"]["cost_breakdown"]["total"])  # $0.32</pre>
+
+              <h2>Reporting Conversions</h2>
+              <p>After outcome delivery, report success/failure to close the feedback loop:</p>
+              <pre class="docs-code">await engine.report_conversion({
+    "event_name": "outcome_complete",
+    "outcome_request_id": response["request_id"],
+    "success": True,
+    "success_criteria_results": {
+        "resolution_confirmed": True,
+        "customer_satisfaction": 5
+    }
+})</pre>
+
+              <div class="docs-callout">
+                <strong>Full SDK documentation:</strong> See <code>sdk/README.md</code> in the repository for configuration options, hooks integration, and vertical-specific examples.
+              </div>
             </section>
 
             <!-- Vertical: Customer Service -->
