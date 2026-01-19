@@ -2911,6 +2911,12 @@ select:focus {
   opacity: 1;
 }
 
+@media (max-width: 768px) {
+  .code-copy-btn {
+    opacity: 1;
+  }
+}
+
 .code-copy-btn:hover {
   background: var(--accent);
   border-color: var(--accent);
