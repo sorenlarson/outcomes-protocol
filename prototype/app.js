@@ -337,6 +337,7 @@ const successCriteria = {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('Outcomes Protocol: Initializing...');
   initNavigation();
   initOutcomeCards();
   initWizard();
@@ -345,6 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initRadioGroups();
   initDashboardFilters();
   initDocsNavigation();
+  console.log('Outcomes Protocol: Ready');
 });
 
 // Dashboard metrics data by outcome type
@@ -449,8 +451,18 @@ function initDocsNavigation() {
       const targetSection = document.getElementById(`section-${section}`);
       if (targetSection) {
         targetSection.classList.add('active');
-        // Scroll to top of content
-        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Scroll everything to top
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+        window.scrollTo(0, 0);
+        const docsContent = document.querySelector('.docs-content');
+        if (docsContent) {
+          docsContent.scrollTop = 0;
+        }
+        const main = document.querySelector('.main');
+        if (main) {
+          main.scrollTop = 0;
+        }
       }
     });
   });
@@ -502,14 +514,32 @@ function initNavigation() {
 }
 
 function showView(viewId) {
+  console.log('showView called with:', viewId);
   const views = document.querySelectorAll('.view');
-  views.forEach(v => v.classList.remove('active'));
+  console.log('Found views:', views.length);
+  views.forEach(v => {
+    v.classList.remove('active');
+    console.log('Removed active from:', v.id);
+  });
   const targetView = document.getElementById(`view-${viewId}`);
   if (targetView) {
     targetView.classList.add('active');
     state.currentView = viewId;
+    console.log('Added active to:', targetView.id);
+    // Also update nav
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.classList.remove('active');
+      if (item.dataset.view === viewId) {
+        item.classList.add('active');
+      }
+    });
+  } else {
+    console.error('View not found:', `view-${viewId}`);
   }
 }
+
+// Make showView globally accessible for onclick handlers
+window.showView = showView;
 
 // Outcome Cards
 function initOutcomeCards() {
@@ -522,17 +552,7 @@ function initOutcomeCards() {
     });
   });
 
-  // Back buttons
-  document.querySelectorAll('.back-button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const target = btn.dataset.back;
-      if (target === 'catalog') {
-        showView('catalog');
-      } else if (target === 'outcome-types') {
-        showView('outcome-types');
-      }
-    });
-  });
+  // Back buttons handled via onclick attributes and window.showView
 }
 
 function showOutcomeTypes(category) {

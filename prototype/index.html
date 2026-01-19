@@ -128,7 +128,7 @@
       <!-- View: Outcome Type Selection -->
       <div id="view-outcome-types" class="view">
         <div class="page-header">
-          <button class="back-button" data-back="catalog">
+          <button type="button" class="back-button" onclick="window.showView('catalog')">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M19 12H5M12 19l-7-7 7-7"/>
             </svg>
@@ -432,35 +432,43 @@
               <div class="strategy-cards">
                 <label class="strategy-card selected">
                   <input type="radio" name="strategy" value="highest_volume" checked>
-                  <div class="strategy-header">
-                    <span class="strategy-name">Highest Volume</span>
-                    <span class="strategy-badge">Recommended</span>
+                  <div class="strategy-content">
+                    <div class="strategy-header">
+                      <span class="strategy-name">Highest Volume</span>
+                      <span class="strategy-badge">Recommended</span>
+                    </div>
+                    <p class="strategy-desc">Get the most results for your budget.</p>
                   </div>
-                  <p class="strategy-desc">Get the most results for your budget.</p>
                 </label>
 
                 <label class="strategy-card">
                   <input type="radio" name="strategy" value="cost_per_result">
-                  <div class="strategy-header">
-                    <span class="strategy-name">Cost Per Result Goal</span>
+                  <div class="strategy-content">
+                    <div class="strategy-header">
+                      <span class="strategy-name">Cost Per Result Goal</span>
+                    </div>
+                    <p class="strategy-desc">Aim for a certain cost per result while maximizing volume.</p>
                   </div>
-                  <p class="strategy-desc">Aim for a certain cost per result while maximizing volume.</p>
                 </label>
 
                 <label class="strategy-card">
                   <input type="radio" name="strategy" value="bid_cap">
-                  <div class="strategy-header">
-                    <span class="strategy-name">Bid Cap</span>
+                  <div class="strategy-content">
+                    <div class="strategy-header">
+                      <span class="strategy-name">Bid Cap</span>
+                    </div>
+                    <p class="strategy-desc">Set the highest you want to pay in any auction.</p>
                   </div>
-                  <p class="strategy-desc">Set the highest you want to pay in any auction.</p>
                 </label>
 
                 <label class="strategy-card">
                   <input type="radio" name="strategy" value="roas_goal">
-                  <div class="strategy-header">
-                    <span class="strategy-name">ROAS Goal</span>
+                  <div class="strategy-content">
+                    <div class="strategy-header">
+                      <span class="strategy-name">ROAS Goal</span>
+                    </div>
+                    <p class="strategy-desc">Aim to keep Return on Agent Spend around an average amount.</p>
                   </div>
-                  <p class="strategy-desc">Aim to keep Return on Agent Spend around an average amount.</p>
                 </label>
               </div>
 
@@ -1066,7 +1074,7 @@
               </ul>
 
               <div class="docs-callout">
-                <strong>Try the prototype:</strong> Use the <a href="#" onclick="showView('catalog'); return false;">Catalog</a> to explore outcome types and configure a request.
+                <strong>Try the prototype:</strong> Use the <a href="#" onclick="window.showView('catalog'); return false;">Catalog</a> to explore outcome types and configure a request.
               </div>
             </section>
 
@@ -1650,6 +1658,7 @@ async for event in client.run(prompt):
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script>console.log('Inline script works');</script>
+  <script src="app.js" onerror="console.error('Failed to load app.js')"></script>
 </body>
 </html>
