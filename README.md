@@ -2,6 +2,10 @@
 
 A marketplace-based pricing system for AI outcomes that borrows auction/bidding mechanics from ad-tech (Meta Advantage+, Google Performance Max) to solve information asymmetry problems in outcome-based pricing.
 
+## Background
+
+This protocol is based on [Outcomes Protocol](https://hypersoren.xyz/posts/outcomes-protocol/), which explores how ad-tech auction mechanics can solve information asymmetry problems in AI pricing.
+
 ## The Problem
 
 Current AI deployment faces several challenges:
