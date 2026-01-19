@@ -541,6 +541,27 @@ function showView(viewId) {
 // Make showView globally accessible for onclick handlers
 window.showView = showView;
 
+// Mobile menu
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu');
+  menu.classList.toggle('active');
+}
+
+function mobileNavTo(viewId) {
+  showView(viewId);
+  toggleMobileMenu();
+  // Update mobile nav active state
+  document.querySelectorAll('.mobile-nav-item').forEach(item => {
+    item.classList.remove('active');
+    if (item.dataset.view === viewId) {
+      item.classList.add('active');
+    }
+  });
+}
+
+window.toggleMobileMenu = toggleMobileMenu;
+window.mobileNavTo = mobileNavTo;
+
 // Outcome Cards
 function initOutcomeCards() {
   const cards = document.querySelectorAll('.outcome-card');

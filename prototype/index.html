@@ -21,6 +21,24 @@
 </head>
 <body>
   <div class="app">
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobile-menu">
+      <div class="mobile-menu-header">
+        <span class="logo-text">Outcomes Protocol</span>
+        <button class="mobile-menu-close" onclick="toggleMobileMenu()" aria-label="Close menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <nav class="mobile-nav">
+        <a href="#" class="mobile-nav-item active" data-view="catalog" onclick="mobileNavTo('catalog')">Catalog</a>
+        <a href="#" class="mobile-nav-item" data-view="dashboard" onclick="mobileNavTo('dashboard')">Dashboard</a>
+        <a href="#" class="mobile-nav-item" data-view="history" onclick="mobileNavTo('history')">History</a>
+        <a href="#" class="mobile-nav-item" data-view="docs" onclick="mobileNavTo('docs')">Docs</a>
+      </nav>
+    </div>
+
     <!-- Header -->
     <header class="header">
       <div class="header-left">
@@ -34,6 +52,11 @@
           <a href="#" class="nav-item" data-view="history">History</a>
           <a href="#" class="nav-item" data-view="docs">Docs</a>
         </nav>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 12h18M3 6h18M3 18h18"/>
+          </svg>
+        </button>
       </div>
       <div class="header-right">
         <div class="budget-indicator">
