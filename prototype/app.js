@@ -1271,3 +1271,25 @@ function closeModal() {
 
 // Make closeModal globally available
 window.closeModal = closeModal;
+
+// Copy code to clipboard
+function copyCode(button) {
+  const codeBlock = button.previousElementSibling;
+  const code = codeBlock.textContent;
+
+  navigator.clipboard.writeText(code).then(() => {
+    button.textContent = 'Copied!';
+    button.classList.add('copied');
+
+    setTimeout(() => {
+      button.textContent = 'Copy';
+      button.classList.remove('copied');
+    }, 2000);
+  }).catch(err => {
+    console.error('Failed to copy:', err);
+    button.textContent = 'Failed';
+  });
+}
+
+// Make copyCode globally available
+window.copyCode = copyCode;

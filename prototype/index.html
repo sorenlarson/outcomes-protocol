@@ -1366,7 +1366,8 @@
 
               <h2>Execution Preferences</h2>
               <p>Buyers can constrain which engines handle their requests:</p>
-              <pre class="docs-code">{
+              <div class="code-block">
+                <pre class="docs-code">{
   "execution_preferences": {
     "allowed_engines": ["claude-code", "gpt-5-devin"],
     "blocked_engines": ["experimental-*"],
@@ -1374,6 +1375,8 @@
     "capability_requirements": ["code_execution"]
   }
 }</pre>
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+              </div>
             </section>
 
             <!-- SDK Integration -->
@@ -1407,9 +1410,12 @@
 
               <h2>Authentication</h2>
               <p>Initialize the client with your API key (found in Dashboard → Settings → API Keys):</p>
-              <pre class="docs-code">from outcomes_sdk import Outcomes
+              <div class="code-block">
+                <pre class="docs-code">from outcomes_sdk import Outcomes
 
 client = Outcomes(api_key="sk_live_...")</pre>
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+              </div>
 
               <h2>Execution Models</h2>
               <p>The execution model depends on the outcome type:</p>
@@ -1432,44 +1438,69 @@ client = Outcomes(api_key="sk_live_...")</pre>
               </table>
 
               <h2>Single-Turn Example</h2>
-              <p>For outcomes that take an input and produce an output:</p>
-              <pre class="docs-code"># config_id from dashboard after launching code.review outcome
-response = await client.execute("cfg_abc123", {
-    "pull_request": 142,
-    "repo": "acme/backend"
-})
+              <p>For outcomes like code review, a webhook triggers execution. The system fetches context (PR diff, files) from integrations configured in the dashboard:</p>
+              <div class="code-block">
+                <pre class="docs-code"># Triggered by GitHub webhook when PR is opened
+@app.post("/webhooks/github")
+async def handle_pr_opened(event: PullRequestEvent):
+    response = await client.execute("cfg_abc123", {
+        "repo": event.repository.full_name,
+        "pull_request": event.pull_request.number
+        # System fetches diff via GitHub integration (configured in dashboard)
+    })
 
-print(response.status)     # "completed" | "failed"
-print(response.artifacts)  # [{ type: "review", comments: [...] }]
-print(response.cost)       # 1.24</pre>
+    # Post the review back to GitHub
+    await github.create_review(
+        repo=event.repository.full_name,
+        pr=event.pull_request.number,
+        comments=response.artifacts[0]["comments"]
+    )</pre>
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+              </div>
 
               <h2>Session-Based Example</h2>
-              <p>For conversational outcomes, start a session and process messages:</p>
-              <pre class="docs-code"># config_id from dashboard after launching cs.resolve outcome
-session = await client.start_session("cfg_7kx9m2nq", {
-    "customer_id": "cust_abc123"
-})
+              <p>For customer service, you start a session with the customer's initial message. The system fetches customer context from integrations configured in the dashboard:</p>
+              <div class="code-block">
+                <pre class="docs-code"># Customer opens chat and sends first message
+@app.post("/chat/start")
+async def start_chat(request: ChatRequest):
+    session = await client.start_session("cfg_7kx9m2nq", {
+        "customer_id": request.customer_id,
+        "initial_message": request.message  # "Where is my order?"
+        # System fetches customer data via CRM integration (configured in dashboard)
+    })
 
-# Handle incoming customer messages
-@chat_platform.on_message
-async def handle_message(msg):
-    response = await session.process(msg)
-    await chat_platform.send(response.message)
+    # Return agent's first response
+    return {"message": session.response.message, "session_id": session.id}
+
+# Customer sends follow-up messages
+@app.post("/chat/message")
+async def chat_message(request: MessageRequest):
+    session = client.get_session(request.session_id)
+    response = await session.process(request.message)
 
     if session.status == "resolved":
-        # Report conversion after observing success
         await client.report_conversion(session.id, success=True)
+        return {"message": response.message, "resolved": True}
     elif session.status == "escalated":
-        await hand_off_to_human(session.handoff_summary)</pre>
+        return {"message": "Connecting you to a human agent...", "escalated": True}
+
+    return {"message": response.message}</pre>
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+              </div>
 
               <h2>Reporting Conversions</h2>
-              <p>For cAPI-verified outcomes, report what you observe after the outcome completes:</p>
-              <pre class="docs-code"># Report success/failure based on your observation
+              <p>For cAPI-verified outcomes, report what you observe after the outcome completes. This is typically done asynchronously (e.g., when a ticket stays closed for 24h):</p>
+              <div class="code-block">
+                <pre class="docs-code"># Called by your system when you observe the outcome succeeded/failed
+# e.g., ticket stayed closed for 24h, or customer reopened it
 await client.report_conversion(
-    session_id=session.id,
+    session_id="sess_abc123",
     success=True,              # Did the outcome succeed?
     outcome_value=15.00        # Optional: for ROAS optimization
 )</pre>
+                <button class="code-copy-btn" onclick="copyCode(this)">Copy</button>
+              </div>
               <p>This closes the feedback loop — the system learns which outcomes succeed and optimizes accordingly.</p>
 
               <div class="docs-callout">
