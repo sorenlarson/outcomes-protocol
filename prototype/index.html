@@ -1379,63 +1379,87 @@
             <!-- SDK Integration -->
             <section class="docs-section" id="section-sdk">
               <h1>SDK Integration</h1>
-              <p>Integrate outcome requests into your application using the Claude Agent SDK.</p>
+              <p>Integrate outcome requests into your application using the Claude Agent SDK. The execution model depends on the outcome type.</p>
 
-              <h2>Outcome Request</h2>
-              <p>An outcome request specifies what you want, how to verify success, and your pricing constraints:</p>
-              <pre class="docs-code">{
-  "outcome_type": "cs.resolve",
-  "specification": {
-    "objective": "Resolve customer inquiry about order status",
-    "constraints": ["Must not offer refunds over $50"]
-  },
-  "success_criteria": {
-    "required": [
-      { "metric": "resolution_confirmed", "operator": "eq", "value": true },
-      { "metric": "customer_satisfaction", "operator": "gte", "value": 4 }
-    ]
-  },
-  "delivery_constraints": {
-    "max_latency_seconds": 300,
-    "latency_preference": "fastest"
-  },
-  "bid_strategy": {
-    "type": "target_cost",
-    "bid_amount": 0.45
-  }
-}</pre>
+              <h2>Execution Models</h2>
+              <table class="docs-table">
+                <thead>
+                  <tr><th>Model</th><th>Description</th><th>Use cases</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><strong>Single-turn</strong></td>
+                    <td>Agent receives input, returns output</td>
+                    <td><code>code.review</code>, <code>legal.draft_nda</code></td>
+                  </tr>
+                  <tr>
+                    <td><strong>Session-based</strong></td>
+                    <td>Agent manages multi-turn conversation</td>
+                    <td><code>cs.resolve</code>, live chat</td>
+                  </tr>
+                </tbody>
+              </table>
 
-              <h2>Python Example</h2>
-              <p>Execute an outcome and report results via the Conversions API:</p>
-              <pre class="docs-code">from outcomes_provider import OutcomesEngine
+              <h2>Single-Turn Execution</h2>
+              <p>For outcomes that take an input and produce an output (code review, document drafting):</p>
+              <pre class="docs-code">from outcomes_sdk import OutcomesEngine
 
-# Initialize from config
 engine = OutcomesEngine.from_config(".claude/outcomes.yml")
 
-# Execute an outcome
+# Execute and get result
 response = await engine.execute({
-    "outcome_type": "cs.resolve",
-    "specification": {
-        "objective": "Resolve customer inquiry",
-        "customer_id": "cust_abc123"
+    "outcome_type": "code.review",
+    "context": {
+        "repo": "acme/backend",
+        "pull_request": 142
     },
+    "constraints": ["Focus on security issues"],
+    "bid_strategy": {"type": "bid_cap", "max_amount": 2.00}
+})
+
+# Response contains the completed work
+print(response["status"])      # "completed" | "failed"
+print(response["artifacts"])   # [{ "type": "review", "comments": [...] }]
+print(response["cost"])        # 1.24</pre>
+
+              <h2>Session-Based Execution</h2>
+              <p>For conversational outcomes like customer service, the agent manages a session:</p>
+              <pre class="docs-code">from outcomes_sdk import OutcomesEngine
+
+engine = OutcomesEngine.from_config(".claude/outcomes.yml")
+
+# Start a session for a customer conversation
+session = await engine.start_session({
+    "outcome_type": "cs.resolve",
+    "context": {
+        "customer_id": "cust_abc123",
+        "channel": "chat"
+    },
+    "constraints": ["Cannot offer refunds over $50"],
     "bid_strategy": {"type": "target_cost", "bid_amount": 0.45}
 })
 
-# Response includes status, result, and delivery metrics
-print(response["status"])        # "completed" | "failed" | "escalated"
-print(response["delivery_metrics"]["cost_breakdown"]["total"])  # $0.32</pre>
+# Handle incoming customer messages
+@chat_platform.on_message
+async def handle_message(customer_msg):
+    response = await session.process(customer_msg)
+
+    # Send agent response back to customer
+    await chat_platform.send(response.message)
+
+    # Check if outcome is complete
+    if session.status == "resolved":
+        await report_success(session)
+    elif session.status == "escalated":
+        await hand_off_to_human(session.handoff_summary)</pre>
 
               <h2>Reporting Conversions</h2>
-              <p>After outcome delivery, report success/failure to close the feedback loop:</p>
-              <pre class="docs-code">await engine.report_conversion({
-    "event_name": "outcome_complete",
-    "outcome_request_id": response["request_id"],
-    "success": True,
-    "success_criteria_results": {
-        "resolution_confirmed": True,
-        "customer_satisfaction": 5
-    }
+              <p>After the outcome completes, report success or failure to close the feedback loop. For cAPI-verified outcomes, this is how the system learns:</p>
+              <pre class="docs-code"># Report based on what you observe
+await engine.report_conversion({
+    "session_id": session.id,
+    "success": True,  # Ticket stayed closed, customer satisfied
+    "outcome_value": 15.00  # Optional: for ROAS optimization
 })</pre>
 
               <div class="docs-callout">
