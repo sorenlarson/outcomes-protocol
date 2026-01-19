@@ -2160,6 +2160,7 @@ select {
 
 .docs-section {
   display: none;
+  scroll-margin-top: 80px;
 }
 
 .docs-section.active {
@@ -2287,6 +2288,147 @@ select {
 
 .docs-callout-info strong {
   color: var(--gray-900);
+}
+
+/* Decision Tree */
+.decision-tree {
+  margin: 32px 0;
+}
+
+.decision-node {
+  padding: 20px 24px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 16px;
+}
+
+.decision-question {
+  background: var(--gray-50);
+  border: 2px solid var(--gray-200);
+}
+
+.decision-question-secondary {
+  background: white;
+  border: 2px dashed var(--gray-300);
+}
+
+.decision-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gray-500);
+  margin-bottom: 8px;
+}
+
+.decision-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--gray-900);
+  line-height: 1.5;
+}
+
+.decision-hint {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-top: 8px;
+  font-style: italic;
+}
+
+.decision-branches {
+  display: flex;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.decision-branch {
+  flex: 1;
+  position: relative;
+}
+
+.branch-label {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.decision-branch-no .branch-label {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.decision-branch-yes .branch-label {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.branch-line {
+  width: 2px;
+  height: 20px;
+  margin: 0 auto 12px;
+}
+
+.decision-branch-no .branch-line {
+  background: #fca5a5;
+}
+
+.decision-branch-yes .branch-line {
+  background: #86efac;
+}
+
+.decision-result {
+  border: none;
+  padding: 20px;
+}
+
+.decision-result-guarantee {
+  background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+  border-left: 4px solid #f59e0b;
+}
+
+.decision-result-capi {
+  background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+  border-left: 4px solid var(--primary);
+}
+
+.result-model {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.decision-result-guarantee .result-model {
+  color: #b45309;
+}
+
+.decision-result-capi .result-model {
+  color: var(--primary-dark);
+}
+
+.result-reason {
+  font-size: 14px;
+  color: var(--gray-700);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.result-example {
+  font-size: 13px;
+  color: var(--gray-500);
+  font-style: italic;
+}
+
+.decision-branches-nested {
+  margin-top: 16px;
+}
+
+@media (max-width: 700px) {
+  .decision-branches {
+    flex-direction: column;
+    gap: 16px;
+  }
 }
 
 .docs-table {

@@ -1168,18 +1168,59 @@
               </div>
 
               <h2>When to Use Which?</h2>
-              <table class="docs-table">
-                <thead>
-                  <tr><th>Scenario</th><th>Recommended Model</th></tr>
-                </thead>
-                <tbody>
-                  <tr><td>Success can be measured within days/weeks</td><td>cAPI-verified</td></tr>
-                  <tr><td>Success requires domain expert judgment</td><td>Guarantee-backed</td></tr>
-                  <tr><td>Verification horizon is months/years</td><td>Guarantee-backed</td></tr>
-                  <tr><td>Objective metrics exist (tests, surveys)</td><td>cAPI-verified</td></tr>
-                  <tr><td>"Good enough" is subjective</td><td>Guarantee-backed</td></tr>
-                </tbody>
-              </table>
+              <p>Two factors determine the right model: <strong>visibility</strong> (can you observe signals?) and <strong>expertise</strong> (can you evaluate quality?).</p>
+
+              <div class="decision-tree">
+                <div class="decision-node decision-question">
+                  <div class="decision-label">Visibility</div>
+                  <div class="decision-text">Can you <strong>observe</strong> success/failure signals within your verification window?</div>
+                  <div class="decision-hint">e.g., ticket reopened, test failed, customer complained</div>
+                </div>
+
+                <div class="decision-branches">
+                  <div class="decision-branch decision-branch-no">
+                    <div class="branch-label">NO</div>
+                    <div class="branch-line"></div>
+                    <div class="decision-node decision-result decision-result-guarantee">
+                      <div class="result-model">Guarantee-backed</div>
+                      <div class="result-reason">Outcome won't be apparent for months/years, or signals aren't observable. You need claim recourse.</div>
+                      <div class="result-example">e.g., "Will this contract hold up in court?"</div>
+                    </div>
+                  </div>
+
+                  <div class="decision-branch decision-branch-yes">
+                    <div class="branch-label">YES</div>
+                    <div class="branch-line"></div>
+                    <div class="decision-node decision-question decision-question-secondary">
+                      <div class="decision-label">Expertise</div>
+                      <div class="decision-text">Do you have the <strong>expertise</strong> to evaluate what you observe?</div>
+                      <div class="decision-hint">Can you judge quality, or do you need a domain expert?</div>
+                    </div>
+
+                    <div class="decision-branches decision-branches-nested">
+                      <div class="decision-branch decision-branch-no">
+                        <div class="branch-label">NO</div>
+                        <div class="branch-line"></div>
+                        <div class="decision-node decision-result decision-result-guarantee">
+                          <div class="result-model">Guarantee-backed</div>
+                          <div class="result-reason">You can see the output but can't judge if it's correct. File claims when experts find defects.</div>
+                          <div class="result-example">e.g., "Is this NDA legally sound?"</div>
+                        </div>
+                      </div>
+
+                      <div class="decision-branch decision-branch-yes">
+                        <div class="branch-label">YES</div>
+                        <div class="branch-line"></div>
+                        <div class="decision-node decision-result decision-result-capi">
+                          <div class="result-model">cAPI-verified</div>
+                          <div class="result-reason">You can observe outcomes and judge quality. Report success/failure via Conversions API.</div>
+                          <div class="result-example">e.g., "Did the customer's issue get resolved?"</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </section>
 
             <!-- Bid Strategies -->
