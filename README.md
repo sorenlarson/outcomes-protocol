@@ -73,7 +73,7 @@ First-class latency specification:
 Built-in human handoff:
 - Configurable triggers (confidence, timeout, explicit request)
 - Structured handoff with summary and context
-- Partial billing models
+- Escalated outcomes aren't billed—you only pay for successful AI resolutions
 
 ### Guarantee Terms
 
@@ -172,13 +172,13 @@ Review the JSON schemas in `schema/` to understand the request/response formats:
 For Claude Agent SDK integration, see `sdk/README.md`:
 
 ```python
-from outcomes_provider import OutcomesProvider
+from outcomes_provider import OutcomesEngine
 
 # Load configuration
-provider = OutcomesProvider.from_config(".claude/outcomes.yml")
+engine = OutcomesEngine.from_config(".claude/outcomes.yml")
 
 # Execute an outcome
-response = await provider.execute(request)
+response = await engine.execute(request)
 
 # Response includes:
 # - status: completed, failed, escalated
