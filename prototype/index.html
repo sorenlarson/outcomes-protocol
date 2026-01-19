@@ -19,6 +19,7 @@
           <a href="#" class="nav-item active" data-view="catalog">Catalog</a>
           <a href="#" class="nav-item" data-view="dashboard">Dashboard</a>
           <a href="#" class="nav-item" data-view="history">History</a>
+          <a href="#" class="nav-item" data-view="docs">Docs</a>
         </nav>
       </div>
       <div class="header-right">
@@ -977,6 +978,478 @@
           <button class="pagination-btn" disabled>&larr; Previous</button>
           <span class="pagination-info">Showing 1-10 of 2,341</span>
           <button class="pagination-btn">Next &rarr;</button>
+        </div>
+      </div>
+
+      <!-- View: Docs -->
+      <div id="view-docs" class="view">
+        <div class="docs-container">
+          <nav class="docs-sidebar">
+            <div class="docs-nav-section">
+              <h4>Getting Started</h4>
+              <a href="#" class="docs-nav-item active" data-section="overview">Overview</a>
+              <a href="#" class="docs-nav-item" data-section="problem">The Problem</a>
+            </div>
+            <div class="docs-nav-section">
+              <h4>Core Concepts</h4>
+              <a href="#" class="docs-nav-item" data-section="outcome-types">Outcome Types</a>
+              <a href="#" class="docs-nav-item" data-section="verification">Verification Models</a>
+              <a href="#" class="docs-nav-item" data-section="bid-strategies">Bid Strategies</a>
+              <a href="#" class="docs-nav-item" data-section="capi">Conversions API</a>
+            </div>
+            <div class="docs-nav-section">
+              <h4>Architecture</h4>
+              <a href="#" class="docs-nav-item" data-section="architecture">System Design</a>
+              <a href="#" class="docs-nav-item" data-section="model-bidding">Model-Level Bidding</a>
+            </div>
+            <div class="docs-nav-section">
+              <h4>Verticals</h4>
+              <a href="#" class="docs-nav-item" data-section="vertical-cs">Customer Service</a>
+              <a href="#" class="docs-nav-item" data-section="vertical-code">Code</a>
+              <a href="#" class="docs-nav-item" data-section="vertical-legal">Legal</a>
+              <a href="#" class="docs-nav-item" data-section="vertical-medical">Medical</a>
+            </div>
+          </nav>
+
+          <div class="docs-content">
+            <!-- Overview -->
+            <section class="docs-section active" id="section-overview">
+              <h1>Outcomes Protocol</h1>
+              <p class="docs-lead">A marketplace-based pricing system for AI outcomes that borrows auction/bidding mechanics from ad-tech (Meta Advantage+, Google Performance Max) to solve information asymmetry problems in outcome-based pricing.</p>
+
+              <h2>What is this?</h2>
+              <p>Instead of paying per API call or negotiating custom deals, the Outcomes Protocol lets you:</p>
+              <ul>
+                <li><strong>Define what you want</strong> &mdash; Select from standardized outcome types (resolve a ticket, review code, draft a contract)</li>
+                <li><strong>Set your price</strong> &mdash; Use bid strategies like cost caps and ROAS targets</li>
+                <li><strong>Get guarantees</strong> &mdash; Outcomes are backed by verifiable success criteria or guarantee contracts</li>
+                <li><strong>Optimize over time</strong> &mdash; The Conversions API creates feedback loops for continuous improvement</li>
+              </ul>
+
+              <div class="docs-callout">
+                <strong>Try the prototype:</strong> Use the <a href="#" onclick="showView('catalog'); return false;">Catalog</a> to explore outcome types and configure a request.
+              </div>
+            </section>
+
+            <!-- The Problem -->
+            <section class="docs-section" id="section-problem">
+              <h1>The Problem</h1>
+              <p>Current AI deployment faces several challenges that the Outcomes Protocol addresses:</p>
+
+              <table class="docs-table">
+                <thead>
+                  <tr>
+                    <th>Problem</th>
+                    <th>Current Approach</th>
+                    <th>Protocol Solution</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Information asymmetry</td>
+                    <td>Buyers must reveal outcome value</td>
+                    <td>Buyers express WTP through bid caps</td>
+                  </tr>
+                  <tr>
+                    <td>Price formation</td>
+                    <td>Bespoke negotiation</td>
+                    <td>Systematic auction/bidding mechanics</td>
+                  </tr>
+                  <tr>
+                    <td>No feedback loop</td>
+                    <td>One-time pricing</td>
+                    <td>Conversions API enables optimization</td>
+                  </tr>
+                  <tr>
+                    <td>Non-scalable</td>
+                    <td>Per-customer deals</td>
+                    <td>Standardized outcomes create liquidity</td>
+                  </tr>
+                  <tr>
+                    <td>Risk absorption</td>
+                    <td>Providers self-insure</td>
+                    <td>Risk market hooks enable trading</td>
+                  </tr>
+                  <tr>
+                    <td>Latency ambiguity</td>
+                    <td>Implicit expectations</td>
+                    <td>Explicit delivery constraints</td>
+                  </tr>
+                  <tr>
+                    <td>Failure handling</td>
+                    <td>Ad-hoc escalation</td>
+                    <td>Standardized handoff protocol</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h2>Comparison to Current Approaches</h2>
+
+              <h3>vs. Vertical AI Companies (Harvey, Intercom)</h3>
+              <ul>
+                <li><strong>Current:</strong> Each company builds trust, pricing, guarantees independently</li>
+                <li><strong>Protocol:</strong> Standardized outcomes enable marketplace dynamics, risk trading</li>
+              </ul>
+
+              <h3>vs. API Pricing (Per-token)</h3>
+              <ul>
+                <li><strong>Current:</strong> Buyer bears all outcome risk, no guarantees</li>
+                <li><strong>Protocol:</strong> Outcome-based with configurable guarantees and escalation</li>
+              </ul>
+
+              <h3>vs. Manual Warranties (Intercom $1M Guarantee)</h3>
+              <ul>
+                <li><strong>Current:</strong> Bespoke pricing, company-specific</li>
+                <li><strong>Protocol:</strong> Market-based risk pricing, portable across providers</li>
+              </ul>
+            </section>
+
+            <!-- Outcome Types -->
+            <section class="docs-section" id="section-outcome-types">
+              <h1>Outcome Types</h1>
+              <p>Like Meta's campaign objectives, the protocol defines standardized outcome types. This enables price comparability, market liquidity, and success criteria standardization.</p>
+
+              <h2>Customer Service</h2>
+              <div class="docs-code-badge">cs.resolve</div>
+              <p>Single outcome type &mdash; customer service is reactive, you don't know what the customer will need until they ask.</p>
+
+              <h2>Code</h2>
+              <div class="docs-code-badge">code.review</div>
+              <div class="docs-code-badge">code.fix</div>
+              <p>Review PRs for bugs, style, and security issues. Diagnose and fix reported bugs.</p>
+
+              <h2>Legal</h2>
+              <div class="docs-code-badge">legal.review</div>
+              <div class="docs-code-badge">legal.summarize</div>
+              <div class="docs-code-badge">legal.compare</div>
+              <div class="docs-code-badge">legal.draft_nda</div>
+              <div class="docs-code-badge">legal.draft_msa</div>
+              <div class="docs-code-badge">legal.draft_dpa</div>
+              <p>Contract review, summarization, comparison, and drafting. All legal outcomes are guarantee-backed.</p>
+
+              <h2>Medical</h2>
+              <div class="docs-code-badge">medical.scribe</div>
+              <p>Clinical documentation from patient encounters. Real-time scribing with guarantee coverage for documentation accuracy.</p>
+            </section>
+
+            <!-- Verification Models -->
+            <section class="docs-section" id="section-verification">
+              <h1>Verification Models</h1>
+              <p>Outcomes use one of two verification models based on whether success can be objectively measured:</p>
+
+              <div class="docs-card">
+                <h3>📊 cAPI-Verified</h3>
+                <p>Success is measured via Conversions API signals based on observable events.</p>
+                <ul>
+                  <li><strong>Signals:</strong> Ticket closed, no reopen within 24h, no escalation, CSAT score</li>
+                  <li><strong>Payment:</strong> Pay on verified success</li>
+                  <li><strong>Example:</strong> <code>cs.resolve</code></li>
+                </ul>
+              </div>
+
+              <div class="docs-card">
+                <h3>🛡️ Guarantee-Backed</h3>
+                <p>Quality requires expertise to verify. Assurance comes from a guarantee contract.</p>
+                <ul>
+                  <li><strong>Flow:</strong> Agent affirms completion → you pay on delivery → file claims if defects found</li>
+                  <li><strong>Claim window:</strong> 30-90 days depending on outcome type</li>
+                  <li><strong>Examples:</strong> <code>code.*</code>, <code>legal.*</code>, <code>medical.scribe</code></li>
+                </ul>
+              </div>
+
+              <h2>When to Use Which?</h2>
+              <table class="docs-table">
+                <thead>
+                  <tr><th>Scenario</th><th>Recommended Model</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Success can be measured within days/weeks</td><td>cAPI-verified</td></tr>
+                  <tr><td>Success requires domain expert judgment</td><td>Guarantee-backed</td></tr>
+                  <tr><td>Verification horizon is months/years</td><td>Guarantee-backed</td></tr>
+                  <tr><td>Objective metrics exist (tests, surveys)</td><td>cAPI-verified</td></tr>
+                  <tr><td>"Good enough" is subjective</td><td>Guarantee-backed</td></tr>
+                </tbody>
+              </table>
+            </section>
+
+            <!-- Bid Strategies -->
+            <section class="docs-section" id="section-bid-strategies">
+              <h1>Bid Strategies</h1>
+              <p>Mapped from advertising concepts to outcome pricing:</p>
+
+              <table class="docs-table">
+                <thead>
+                  <tr>
+                    <th>Meta Concept</th>
+                    <th>Outcomes Equivalent</th>
+                    <th>Description</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Highest volume</td>
+                    <td><strong>Maximize throughput</strong></td>
+                    <td>Get most outcomes within budget</td>
+                  </tr>
+                  <tr>
+                    <td>Cost cap</td>
+                    <td><strong>Target cost</strong></td>
+                    <td>Average cost target per outcome</td>
+                  </tr>
+                  <tr>
+                    <td>Bid cap</td>
+                    <td><strong>Max outcome price</strong></td>
+                    <td>Never pay more than $X per outcome</td>
+                  </tr>
+                  <tr>
+                    <td>ROAS goal</td>
+                    <td><strong>Return on spend</strong></td>
+                    <td>Target value-to-cost ratio</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <h2>How It Works</h2>
+              <p>You set your bid strategy, and execution engines compete to deliver outcomes within your constraints. The system optimizes over time based on Conversions API feedback.</p>
+
+              <div class="docs-callout">
+                <strong>Example:</strong> With a $0.50 cost cap for <code>cs.resolve</code>, you'll average $0.50 per resolved ticket. Some may cost $0.30, others $0.70, but the system optimizes to hit your target.
+              </div>
+            </section>
+
+            <!-- Conversions API -->
+            <section class="docs-section" id="section-capi">
+              <h1>Conversions API (cAPI)</h1>
+              <p>A server-side feedback mechanism following Meta's Server-Side Events model:</p>
+
+              <ul>
+                <li><strong>Outcome verification signals</strong> &mdash; Report success/failure based on observable events</li>
+                <li><strong>Guarantee claim processing</strong> &mdash; File claims when defects are discovered</li>
+                <li><strong>Provider scoring</strong> &mdash; Track execution engine performance</li>
+                <li><strong>Cost optimization</strong> &mdash; System learns from successful outcomes and claim-free deliveries</li>
+              </ul>
+
+              <h2>Event Types</h2>
+              <pre class="docs-code">{
+  "event_type": "outcome.success",
+  "event_time": "2025-01-18T10:30:00Z",
+  "outcome_request_id": "out_123abc",
+  "success_criteria_results": {
+    "resolution_confirmed": true,
+    "customer_satisfaction": 5,
+    "no_reopen_24h": true
+  }
+}</pre>
+
+              <pre class="docs-code">{
+  "event_type": "guarantee.claim",
+  "outcome_request_id": "out_456def",
+  "claim": {
+    "type": "documentation_error",
+    "description": "Incorrect dosage documented",
+    "evidence": "...",
+    "requested_amount": 500.00
+  }
+}</pre>
+            </section>
+
+            <!-- Architecture -->
+            <section class="docs-section" id="section-architecture">
+              <h1>System Architecture</h1>
+
+              <pre class="docs-code architecture">┌─────────────────────────────────────────────────────────────────┐
+│                      RISK MARKET LAYER                          │
+│        (Future: Outcomes Contracts, Risk Pricing)               │
+├─────────────────────────────────────────────────────────────────┤
+│                    OUTCOMES MARKETPLACE                          │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐       │
+│  │   Outcome    │    │  Bid/Budget  │    │  Delivery    │       │
+│  │   Catalog    │ →  │   Engine     │ →  │  Optimizer   │       │
+│  │  (Taxonomy)  │    │  (Auction)   │    │  (Learning)  │       │
+│  └──────────────┘    └──────────────┘    └──────────────┘       │
+│                            ↑                                     │
+│  ┌──────────────────────────────────────────────────────┐       │
+│  │              Conversions API (cAPI)                   │       │
+│  └──────────────────────────────────────────────────────┘       │
+├─────────────────────────────────────────────────────────────────┤
+│                    EXECUTION ENGINES                             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐           │
+│  │ Claude Code  │  │   GPT-5 +    │  │   Gemini +   │           │
+│  │  (Anthropic) │  │    Devin     │  │  Custom MCP  │           │
+│  └──────────────┘  └──────────────┘  └──────────────┘           │
+│                                                                  │
+│  Models + harnesses bid directly on outcomes                    │
+│  (Human fallback available for escalation)                      │
+└─────────────────────────────────────────────────────────────────┘</pre>
+
+              <h2>Key Components</h2>
+              <ul>
+                <li><strong>Outcome Catalog:</strong> Standardized taxonomy of outcome types</li>
+                <li><strong>Bid/Budget Engine:</strong> Auction mechanics for price discovery</li>
+                <li><strong>Delivery Optimizer:</strong> Learns from cAPI feedback to improve over time</li>
+                <li><strong>Execution Engines:</strong> Model + harness combinations that bid on outcomes</li>
+                <li><strong>Risk Market Layer:</strong> Future extension for tradeable outcome contracts</li>
+              </ul>
+            </section>
+
+            <!-- Model-Level Bidding -->
+            <section class="docs-section" id="section-model-bidding">
+              <h1>Model-Level Bidding</h1>
+              <p>The protocol uses <strong>model-level bidding</strong> rather than provider-company intermediaries.</p>
+
+              <h2>Why?</h2>
+              <ul>
+                <li>Provider companies are often thin wrappers around model APIs</li>
+                <li>Direct model bidding removes unnecessary intermediary layers</li>
+                <li>Model vendors can vertically integrate outcomes into their SDKs</li>
+                <li>Cleaner market dynamics: models compete on capability, not brand</li>
+              </ul>
+
+              <h2>Execution Engine = Model + Harness</h2>
+              <ul>
+                <li><strong>Model:</strong> The AI model (Claude, GPT-5, Gemini, etc.)</li>
+                <li><strong>Harness:</strong> Tooling layer (Claude Code, Devin, custom MCP servers)</li>
+              </ul>
+              <p>Together they form an "execution engine" that can bid on outcomes.</p>
+
+              <h2>Execution Preferences</h2>
+              <p>Buyers can constrain which engines handle their requests:</p>
+              <pre class="docs-code">{
+  "execution_preferences": {
+    "allowed_engines": ["claude-code", "gpt-5-devin"],
+    "blocked_engines": ["experimental-*"],
+    "preferred_engine": "claude-code",
+    "capability_requirements": ["code_execution"]
+  }
+}</pre>
+            </section>
+
+            <!-- Vertical: Customer Service -->
+            <section class="docs-section" id="section-vertical-cs">
+              <h1>Customer Service</h1>
+              <div class="docs-code-badge">cs.resolve</div>
+              <span class="verification-badge capi">📊 cAPI-Verified</span>
+
+              <p>Resolve customer inquiries end-to-end with AI-powered assistance.</p>
+
+              <h2>Success Criteria</h2>
+              <ul>
+                <li>Resolution confirmed by customer or agent</li>
+                <li>No ticket reopen within 24 hours</li>
+                <li>No escalation to human</li>
+                <li>Customer satisfaction score ≥ threshold</li>
+              </ul>
+
+              <h2>Typical Pricing</h2>
+              <p><strong>$0.15 - $0.75</strong> per resolved inquiry, depending on complexity and success rate requirements.</p>
+
+              <h2>Escalation</h2>
+              <p>Configurable triggers for human handoff: confidence threshold, explicit customer request, timeout, or sensitive topics.</p>
+            </section>
+
+            <!-- Vertical: Code -->
+            <section class="docs-section" id="section-vertical-code">
+              <h1>Code</h1>
+              <div class="docs-code-badge">code.review</div>
+              <div class="docs-code-badge">code.fix</div>
+              <span class="verification-badge guarantee">🛡️ Guarantee-Backed</span>
+
+              <p>Review PRs and fix bugs with guaranteed quality.</p>
+
+              <h2>code.review</h2>
+              <ul>
+                <li>Review for bugs, security issues, style violations</li>
+                <li>Provide actionable feedback</li>
+                <li><strong>Pricing:</strong> $0.50 - $5.00 per PR</li>
+                <li><strong>Claim window:</strong> 30 days</li>
+              </ul>
+
+              <h2>code.fix</h2>
+              <ul>
+                <li>Diagnose and fix reported bugs</li>
+                <li>Includes tests to prevent regression</li>
+                <li><strong>Pricing:</strong> $2.00 - $25.00 per fix</li>
+                <li><strong>Claim window:</strong> 30 days</li>
+              </ul>
+
+              <h2>Guarantee Coverage</h2>
+              <p>Covers: missed bugs, introduced regressions, security vulnerabilities, incomplete fixes. Does not cover: requirements changes, environmental issues, pre-existing bugs.</p>
+            </section>
+
+            <!-- Vertical: Legal -->
+            <section class="docs-section" id="section-vertical-legal">
+              <h1>Legal</h1>
+              <div class="docs-code-badge">legal.review</div>
+              <div class="docs-code-badge">legal.summarize</div>
+              <div class="docs-code-badge">legal.compare</div>
+              <div class="docs-code-badge">legal.draft_nda</div>
+              <div class="docs-code-badge">legal.draft_msa</div>
+              <div class="docs-code-badge">legal.draft_dpa</div>
+              <span class="verification-badge guarantee">🛡️ Guarantee-Backed</span>
+
+              <p>All legal outcomes are guarantee-backed because quality requires legal expertise to verify.</p>
+
+              <h2>Why Guarantee-Backed?</h2>
+              <ul>
+                <li><strong>Correctness requires expertise:</strong> Is the clause enforceable? Only a lawyer knows.</li>
+                <li><strong>Errors surface late:</strong> Contract issues may appear months/years later in disputes.</li>
+                <li><strong>Stakes are high:</strong> A missed liability cap could cost millions.</li>
+              </ul>
+
+              <h2>Claim Windows</h2>
+              <ul>
+                <li><strong>Review/Summarize/Compare:</strong> 30 days</li>
+                <li><strong>Draft documents:</strong> 2 years (contract lifecycle)</li>
+              </ul>
+
+              <h2>Pricing</h2>
+              <ul>
+                <li><strong>Review:</strong> $2.00 - $15.00</li>
+                <li><strong>Summarize:</strong> $1.00 - $5.00</li>
+                <li><strong>Draft NDA:</strong> $10.00 - $50.00</li>
+                <li><strong>Draft MSA:</strong> $50.00 - $200.00</li>
+              </ul>
+            </section>
+
+            <!-- Vertical: Medical -->
+            <section class="docs-section" id="section-vertical-medical">
+              <h1>Medical Scribing</h1>
+              <div class="docs-code-badge">medical.scribe</div>
+              <span class="verification-badge guarantee">🛡️ Guarantee-Backed</span>
+
+              <p>Generate clinical documentation from patient encounters in real-time.</p>
+
+              <h2>Why Guarantee-Backed?</h2>
+              <ul>
+                <li><strong>Accuracy requires clinical expertise:</strong> Only a clinician can verify clinical facts.</li>
+                <li><strong>Errors surface in audits:</strong> Documentation issues may appear during billing audits or care transitions.</li>
+                <li><strong>Patient safety:</strong> Wrong medication or dosage documentation could cause harm.</li>
+              </ul>
+
+              <h2>Guarantee Coverage</h2>
+              <ul>
+                <li>Factual documentation errors (wrong medication, dosage, clinical fact)</li>
+                <li>Critical omissions (material information not documented)</li>
+                <li>Misattribution (statement attributed to wrong party)</li>
+                <li>Coding errors (incorrect codes affecting reimbursement)</li>
+              </ul>
+
+              <h2>Not Covered</h2>
+              <ul>
+                <li>Clinical judgment errors</li>
+                <li>Downstream treatment decisions</li>
+                <li>Patient harm from treatment (not documentation)</li>
+                <li>Malpractice claims</li>
+              </ul>
+
+              <h2>Pricing &amp; Timing</h2>
+              <ul>
+                <li><strong>$1.00 - $8.00</strong> per encounter</li>
+                <li><strong>Real-time</strong> delivery during or immediately after encounter</li>
+                <li><strong>90-day</strong> claim window</li>
+              </ul>
+            </section>
+          </div>
         </div>
       </div>
     </main>

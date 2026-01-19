@@ -344,6 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initStrategyCards();
   initRadioGroups();
   initDashboardFilters();
+  initDocsNavigation();
 });
 
 // Dashboard metrics data by outcome type
@@ -427,6 +428,30 @@ function initDashboardFilters() {
       chips.forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
       updateDashboardMetrics(chip.dataset.type);
+    });
+  });
+}
+
+// Docs navigation
+function initDocsNavigation() {
+  const navItems = document.querySelectorAll('.docs-nav-item');
+  navItems.forEach(item => {
+    item.addEventListener('click', (e) => {
+      e.preventDefault();
+      const section = item.dataset.section;
+
+      // Update nav active state
+      navItems.forEach(n => n.classList.remove('active'));
+      item.classList.add('active');
+
+      // Update section visibility
+      document.querySelectorAll('.docs-section').forEach(s => s.classList.remove('active'));
+      const targetSection = document.getElementById(`section-${section}`);
+      if (targetSection) {
+        targetSection.classList.add('active');
+        // Scroll to top of content
+        targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
     });
   });
 }
