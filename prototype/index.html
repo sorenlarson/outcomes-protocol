@@ -1382,121 +1382,69 @@
             <!-- SDK Integration -->
             <section class="docs-section" id="section-sdk">
               <h1>SDK Integration</h1>
-              <p>The Outcomes Protocol extends the Claude Agent SDK — it doesn't replace it. You add outcomes tracking to your existing agent code via MCP servers and hooks.</p>
-
-              <h2>How It Works</h2>
-              <table class="docs-table">
-                <thead>
-                  <tr><th>Component</th><th>What it does</th></tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><strong>MCP Server</strong></td>
-                    <td>Provides outcomes tools to your agent (<code>record_outcome</code>, CRM lookup, etc.)</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Hooks</strong></td>
-                    <td>Automatically track execution metrics (tool calls, latency, tokens)</td>
-                  </tr>
-                  <tr>
-                    <td><strong>System Prompt</strong></td>
-                    <td>Extends your agent's instructions with outcome-specific guidance</td>
-                  </tr>
-                </tbody>
-              </table>
+              <p>The Outcomes Protocol extends the Claude Agent SDK. Your dashboard configuration encapsulates everything — tools, constraints, system prompt — so your code stays simple.</p>
 
               <h2>Setup</h2>
-              <p>Load your outcome configuration and create the MCP server:</p>
+              <p>Initialize the client with your config ID. Integration credentials are configured in the dashboard (Context Sources):</p>
               <div class="code-block">
-                <pre class="docs-code">from claude_agent_sdk import query, ClaudeAgentOptions
-from outcomes_protocol import load_outcome_config, create_outcomes_server
+                <pre class="docs-code">from outcomes_protocol import OutcomesClient
 
-# Load config created in dashboard (includes bid strategy, constraints, etc.)
-config = load_outcome_config("cfg_7kx9m2nq")
-
-# Create MCP server with outcomes tools + your integrations
-outcomes_server = create_outcomes_server(
-    config=config,
-    integrations={
-        "crm": os.environ["CRM_API_KEY"],
-        "orders": os.environ["ORDERS_API_KEY"]
-    }
-)</pre>
+# Config from dashboard includes everything:
+# tools, constraints, bid strategy, system prompt, integration credentials
+client = OutcomesClient("cfg_7kx9m2nq")</pre>
                 <button class="code-copy-btn" onclick="copyCode(this)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
               </div>
 
               <h2>Running an Outcome</h2>
-              <p>Use the standard <code>query()</code> function with your outcomes MCP server attached:</p>
+              <p>Pass the prompt — the client handles MCP servers, allowed tools, and system prompt from your config:</p>
               <div class="code-block">
-                <pre class="docs-code"># Customer sends: "Where is my order? I ordered last week."
+                <pre class="docs-code"># Customer sends: "Where is my order?"
 async def handle_customer_message(customer_id: str, message: str):
-    async for event in query(
-        prompt=f"Customer {customer_id} says: {message}",
-        options=ClaudeAgentOptions(
-            mcp_servers={"outcomes": outcomes_server},
-            allowed_tools=[
-                "mcp__outcomes__get_customer",
-                "mcp__outcomes__get_orders",
-                "mcp__outcomes__process_refund",
-                "mcp__outcomes__record_outcome"
-            ],
-            system_prompt=config.system_prompt  # Includes constraints, escalation triggers
-        )
-    ):
-        if event.type == "assistant_message":
+    async for event in client.run(f"Customer {customer_id} says: {message}"):
+        if event.type == "assistant":
             yield event.content  # Stream response to customer
 
-        if event.type == "result":
-            # Outcome recorded automatically via record_outcome tool
-            return event.session_id</pre>
+        if event.type == "complete":
+            return event.session_id  # For conversion reporting later</pre>
                 <button class="code-copy-btn" onclick="copyCode(this)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
               </div>
+              <p>Under the hood, the client calls the Claude Agent SDK with your configured MCP server (CRM, orders tools), allowed tools, constraints, and escalation triggers.</p>
 
               <h2>Multi-Turn Conversations</h2>
-              <p>For ongoing conversations, use <code>ClaudeSDKClient</code> to maintain session state:</p>
+              <p>For ongoing conversations, use a session to maintain state:</p>
               <div class="code-block">
-                <pre class="docs-code">from claude_agent_sdk import ClaudeSDKClient
-
-async def customer_service_session(customer_id: str):
-    async with ClaudeSDKClient(options=ClaudeAgentOptions(
-        mcp_servers={"outcomes": outcomes_server},
-        allowed_tools=[...],
-        system_prompt=config.system_prompt
-    )) as client:
-
+                <pre class="docs-code">async def customer_service_session(customer_id: str, first_message: str):
+    async with client.session() as session:
         # First message
-        await client.query(f"Customer {customer_id} needs help")
-        async for msg in client.receive_response():
-            yield msg
+        async for event in session.run(f"Customer {customer_id}: {first_message}"):
+            yield event
 
-        # Follow-up messages in same session
-        while True:
-            customer_reply = await get_next_message()
-            await client.query(customer_reply)
-            async for msg in client.receive_response():
-                yield msg
-                if msg.type == "tool_use" and msg.tool == "record_outcome":
-                    return  # Conversation complete</pre>
+        # Follow-up messages
+        while session.status == "active":
+            next_message = await get_next_customer_message()
+            async for event in session.run(next_message):
+                yield event
+
+        # Session ends when agent resolves or escalates
+        return session.id</pre>
                 <button class="code-copy-btn" onclick="copyCode(this)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
               </div>
 
               <h2>Reporting Conversions</h2>
-              <p>For cAPI-verified outcomes, report what you observe after the fact (e.g., ticket stayed closed for 24h):</p>
+              <p>For cAPI-verified outcomes, report what you observe after the fact:</p>
               <div class="code-block">
-                <pre class="docs-code">from outcomes_protocol import report_conversion
-
-# Called asynchronously when you observe the real-world outcome
-await report_conversion(
-    config_id="cfg_7kx9m2nq",
+                <pre class="docs-code"># Called when you observe the real-world outcome
+# e.g., ticket stayed closed for 24h, or customer reopened it
+await client.report_conversion(
     session_id="sess_abc123",
-    success=True,              # Ticket stayed closed, customer satisfied
-    outcome_value=15.00        # Optional: for ROAS optimization
+    success=True,
+    outcome_value=15.00  # Optional: for ROAS optimization
 )</pre>
                 <button class="code-copy-btn" onclick="copyCode(this)"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
               </div>
 
               <div class="docs-callout docs-callout-info">
-                <strong>Key insight:</strong> The agent uses standard Claude Agent SDK patterns. The Outcomes Protocol adds: (1) an MCP server with your configured tools and constraints, (2) hooks to track metrics automatically, and (3) a system prompt extension with your outcome-specific instructions.
+                <strong>What the config provides:</strong> The dashboard configuration encapsulates everything the Claude Agent SDK needs — MCP server setup, allowed tools, system prompt with constraints and escalation triggers, and hooks for metrics tracking. Your code just calls <code>client.run()</code>.
               </div>
             </section>
 
@@ -1651,15 +1599,12 @@ await report_conversion(
           </div>
           <div class="config-field">
             <label>Quick Start</label>
-            <pre class="config-code">from outcomes_protocol import load_outcome_config
+            <pre class="config-code">from outcomes_protocol import OutcomesClient
 
-config = load_outcome_config("cfg_7kx9m2nq")
-server = create_outcomes_server(config, integrations={...})
+client = OutcomesClient("cfg_7kx9m2nq")
 
-# Use with Claude Agent SDK
-query(prompt, options=ClaudeAgentOptions(
-    mcp_servers={"outcomes": server}
-))</pre>
+async for event in client.run(prompt):
+    print(event.content)</pre>
           </div>
         </div>
         <div class="modal-stats">
