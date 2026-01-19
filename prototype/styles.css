@@ -2326,6 +2326,55 @@ select {
   color: var(--gray-700);
 }
 
+.docs-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.docs-header-row h1 {
+  margin-bottom: 0;
+}
+
+.btn-copy-docs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: white;
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-600);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-copy-docs:hover {
+  background: var(--gray-50);
+  border-color: var(--gray-400);
+  color: var(--gray-800);
+}
+
+.btn-copy-docs svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+  stroke-width: 2;
+  fill: none;
+}
+
+.btn-copy-docs.copied {
+  background: var(--success-light);
+  border-color: var(--success);
+  color: var(--success);
+}
+
 .docs-lead {
   font-size: 20px;
   color: var(--gray-500);

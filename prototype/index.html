@@ -1015,10 +1015,18 @@
           <div class="docs-content">
             <!-- Overview -->
             <section class="docs-section active" id="section-overview">
-              <h1>Outcomes Protocol</h1>
+              <div class="docs-header-row">
+                <h1>Outcomes Protocol</h1>
+                <button class="btn-copy-docs" onclick="copyDocsAsMarkdown()">
+                  <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  Copy docs for LLM
+                </button>
+              </div>
               <p class="docs-lead">A platform for buying affordable AI labor.</p>
 
-              <p>The protocol supports two verification models based on how work gets validated:</p>
+              <p>You define the work you want done&mdash;resolve a ticket, review a PR, draft a contract&mdash;set the price you're willing to pay, and get the outcome. How that outcome gets verified depends on who can judge it: either you observe success directly, or you accept delivery from an expert and have a guarantee to claim against if defects emerge.</p>
+
+              <p>The protocol supports two verification models:</p>
               <ul>
                 <li><strong>Deferrable outcomes</strong> &mdash; Work that can escalate to a human on your team if the AI can't complete it (customer service, triage, routing)</li>
                 <li><strong>Guaranteed outcomes</strong> &mdash; Expert work backed by financialized guarantees with claim windows (legal drafts, code reviews, medical scribing)</li>

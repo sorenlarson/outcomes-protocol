@@ -1295,3 +1295,201 @@ function copyCode(button) {
 
 // Make copyCode globally available
 window.copyCode = copyCode;
+
+// Copy docs as markdown for LLM
+function copyDocsAsMarkdown() {
+  const sections = document.querySelectorAll('.docs-section');
+  let markdown = '# Outcomes Protocol Documentation\n\n';
+
+  sections.forEach(section => {
+    markdown += convertSectionToMarkdown(section);
+    markdown += '\n---\n\n';
+  });
+
+  navigator.clipboard.writeText(markdown.trim()).then(() => {
+    const button = document.querySelector('.btn-copy-docs');
+    const originalHTML = button.innerHTML;
+    button.innerHTML = `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>Copied!`;
+    button.classList.add('copied');
+
+    setTimeout(() => {
+      button.innerHTML = originalHTML;
+      button.classList.remove('copied');
+    }, 2000);
+  }).catch(err => {
+    console.error('Failed to copy docs:', err);
+  });
+}
+
+function convertSectionToMarkdown(section) {
+  let md = '';
+
+  // Process each child element
+  const children = section.children;
+  for (let i = 0; i < children.length; i++) {
+    const el = children[i];
+    const tag = el.tagName.toLowerCase();
+
+    // Skip header row (contains copy button)
+    if (el.classList.contains('docs-header-row')) {
+      const h1 = el.querySelector('h1');
+      if (h1) md += `# ${h1.textContent.trim()}\n\n`;
+      continue;
+    }
+
+    // Headings
+    if (tag === 'h1') {
+      md += `# ${el.textContent.trim()}\n\n`;
+    } else if (tag === 'h2') {
+      md += `## ${el.textContent.trim()}\n\n`;
+    } else if (tag === 'h3') {
+      md += `### ${el.textContent.trim()}\n\n`;
+    }
+
+    // Paragraphs
+    else if (tag === 'p') {
+      md += `${processInlineElements(el)}\n\n`;
+    }
+
+    // Lists
+    else if (tag === 'ul') {
+      el.querySelectorAll(':scope > li').forEach(li => {
+        md += `- ${processInlineElements(li)}\n`;
+      });
+      md += '\n';
+    } else if (tag === 'ol') {
+      let num = 1;
+      el.querySelectorAll(':scope > li').forEach(li => {
+        md += `${num}. ${processInlineElements(li)}\n`;
+        num++;
+      });
+      md += '\n';
+    }
+
+    // Code badges
+    else if (el.classList.contains('docs-code-badge')) {
+      md += `\`${el.textContent.trim()}\` `;
+    }
+
+    // Code blocks
+    else if (tag === 'pre' && el.classList.contains('docs-code')) {
+      md += '```\n' + el.textContent.trim() + '\n```\n\n';
+    } else if (el.classList.contains('code-block')) {
+      const pre = el.querySelector('pre');
+      if (pre) {
+        md += '```\n' + pre.textContent.trim() + '\n```\n\n';
+      }
+    }
+
+    // Tables
+    else if (tag === 'table') {
+      md += convertTableToMarkdown(el) + '\n';
+    }
+
+    // Callouts
+    else if (el.classList.contains('docs-callout')) {
+      md += `> ${processInlineElements(el)}\n\n`;
+    }
+
+    // Cards
+    else if (el.classList.contains('docs-card')) {
+      const h3 = el.querySelector('h3');
+      if (h3) md += `### ${h3.textContent.trim()}\n\n`;
+      el.querySelectorAll('p, ul').forEach(child => {
+        if (child.tagName === 'P') {
+          md += `${processInlineElements(child)}\n\n`;
+        } else if (child.tagName === 'UL') {
+          child.querySelectorAll(':scope > li').forEach(li => {
+            md += `- ${processInlineElements(li)}\n`;
+          });
+          md += '\n';
+        }
+      });
+    }
+
+    // Decision trees (simplify to text)
+    else if (el.classList.contains('decision-tree')) {
+      md += convertDecisionTreeToMarkdown(el);
+    }
+
+    // Verification badges (inline, just add text)
+    else if (el.classList.contains('verification-badge')) {
+      md += `*${el.textContent.trim()}*\n\n`;
+    }
+  }
+
+  return md;
+}
+
+function processInlineElements(el) {
+  let text = '';
+  el.childNodes.forEach(node => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      text += node.textContent;
+    } else if (node.nodeType === Node.ELEMENT_NODE) {
+      const tag = node.tagName.toLowerCase();
+      if (tag === 'strong' || tag === 'b') {
+        text += `**${node.textContent}**`;
+      } else if (tag === 'em' || tag === 'i') {
+        text += `*${node.textContent}*`;
+      } else if (tag === 'code') {
+        text += `\`${node.textContent}\``;
+      } else if (tag === 'a') {
+        text += `[${node.textContent}](${node.href})`;
+      } else {
+        text += node.textContent;
+      }
+    }
+  });
+  return text.trim();
+}
+
+function convertTableToMarkdown(table) {
+  let md = '';
+  const headers = table.querySelectorAll('thead th');
+  const rows = table.querySelectorAll('tbody tr');
+
+  // Header row
+  if (headers.length > 0) {
+    md += '| ' + Array.from(headers).map(h => h.textContent.trim()).join(' | ') + ' |\n';
+    md += '| ' + Array.from(headers).map(() => '---').join(' | ') + ' |\n';
+  }
+
+  // Data rows
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    md += '| ' + Array.from(cells).map(c => processInlineElements(c)).join(' | ') + ' |\n';
+  });
+
+  return md;
+}
+
+function convertDecisionTreeToMarkdown(tree) {
+  let md = '\n**Decision Tree:**\n\n';
+
+  // Get the main question
+  const mainQuestion = tree.querySelector('.decision-question:not(.decision-question-secondary)');
+  if (mainQuestion) {
+    const label = mainQuestion.querySelector('.decision-label')?.textContent || '';
+    const text = mainQuestion.querySelector('.decision-text')?.textContent || '';
+    const hint = mainQuestion.querySelector('.decision-hint')?.textContent || '';
+    md += `**${label}:** ${text}\n`;
+    if (hint) md += `*(${hint})*\n`;
+    md += '\n';
+  }
+
+  // Get the branches and results
+  tree.querySelectorAll('.decision-result').forEach(result => {
+    const model = result.querySelector('.result-model')?.textContent || '';
+    const reason = result.querySelector('.result-reason')?.textContent || '';
+    const example = result.querySelector('.result-example')?.textContent || '';
+    md += `**→ ${model}:** ${reason}\n`;
+    if (example) md += `  *${example}*\n`;
+    md += '\n';
+  });
+
+  return md;
+}
+
+// Make copyDocsAsMarkdown globally available
+window.copyDocsAsMarkdown = copyDocsAsMarkdown;
