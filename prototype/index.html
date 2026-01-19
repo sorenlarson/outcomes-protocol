@@ -506,7 +506,7 @@
                   <span class="cost-unit">target ROAS</span>
                 </div>
                 <div class="roas-note">
-                  <p class="field-description">Requires reporting <code>outcome_value</code> via cAPI for each outcome.</p>
+                  <p class="field-description">Requires reporting <code>outcome_value</code> (buyer-provided) via cAPI for each outcome.</p>
                 </div>
               </div>
 
@@ -1200,6 +1200,7 @@
                 <ul>
                   <li><strong>Flow:</strong> Agent affirms completion → you pay on delivery → file claims if defects found</li>
                   <li><strong>Claim window:</strong> 30-90 days depending on outcome type</li>
+                  <li><strong>Backed by:</strong> The execution engine vendor (in v1). The risk market layer enables third-party underwriting later.</li>
                   <li><strong>Examples:</strong> <code>code.*</code>, <code>legal.*</code>, <code>medical.scribe</code></li>
                 </ul>
               </div>
@@ -1292,7 +1293,7 @@
                   <tr>
                     <td>ROAS goal</td>
                     <td><strong>Return on Agent Spend</strong></td>
-                    <td>Target value-to-cost ratio</td>
+                    <td>Target value-to-cost ratio (requires buyer-provided <code>outcome_value</code>)</td>
                   </tr>
                 </tbody>
               </table>
@@ -1504,7 +1505,7 @@ await client.report_conversion(
               <p><strong>$0.15 - $0.75</strong> per resolved inquiry, depending on complexity and success rate requirements.</p>
 
               <h2>Escalation</h2>
-              <p>Configurable triggers for human handoff: confidence threshold, explicit customer request, timeout, or sensitive topics.</p>
+              <p>Configurable triggers for human handoff: confidence threshold, explicit customer request, timeout, or sensitive topics. Escalated outcomes aren't billed&mdash;you only pay for successful AI resolutions.</p>
             </section>
 
             <!-- Vertical: Code -->
