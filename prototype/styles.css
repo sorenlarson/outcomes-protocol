@@ -3254,5 +3254,10 @@ select:focus {
 @media (max-width: 768px) {
   .mobile-menu-btn {
     display: block;
+    margin-left: auto;
+  }
+
+  .header-left {
+    flex: 1;
   }
 }
