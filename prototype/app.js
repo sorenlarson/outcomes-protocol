@@ -1273,21 +1273,23 @@ function closeModal() {
 window.closeModal = closeModal;
 
 // Copy code to clipboard
+const copyIcon = `<svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
+const checkIcon = `<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
 function copyCode(button) {
   const codeBlock = button.previousElementSibling;
   const code = codeBlock.textContent;
 
   navigator.clipboard.writeText(code).then(() => {
-    button.textContent = 'Copied!';
+    button.innerHTML = checkIcon;
     button.classList.add('copied');
 
     setTimeout(() => {
-      button.textContent = 'Copy';
+      button.innerHTML = copyIcon;
       button.classList.remove('copied');
     }, 2000);
   }).catch(err => {
     console.error('Failed to copy:', err);
-    button.textContent = 'Failed';
   });
 }
 
