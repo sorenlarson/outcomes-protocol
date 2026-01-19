@@ -1015,14 +1015,24 @@
             <!-- Overview -->
             <section class="docs-section active" id="section-overview">
               <h1>Outcomes Protocol</h1>
-              <p class="docs-lead">A marketplace-based pricing system for AI outcomes that borrows auction/bidding mechanics from ad-tech (Meta Advantage+, Google Performance Max) to solve information asymmetry problems in outcome-based pricing.</p>
+              <p class="docs-lead">A platform for buying affordable AI labor.</p>
 
-              <h2>What is this?</h2>
-              <p>Instead of paying per API call or negotiating custom deals, the Outcomes Protocol lets you:</p>
+              <p>The protocol supports two verification models based on how work gets validated:</p>
+              <ul>
+                <li><strong>Deferrable outcomes</strong> &mdash; Work that can escalate to a human on your team if the AI can't complete it (customer service, triage, routing)</li>
+                <li><strong>Guaranteed outcomes</strong> &mdash; Expert work backed by financialized guarantees with claim windows (legal drafts, code reviews, medical scribing)</li>
+              </ul>
+
+              <div class="docs-callout docs-callout-info">
+                <strong>Why this works:</strong> The marketplace mechanism draws from <strong>Meta Advantage+</strong> and <strong>Google Performance Max</strong> &mdash; using auction dynamics and conversion feedback to resolve the information asymmetry inherent in today's SaaS outcome pricing.
+              </div>
+
+              <h2>How it works</h2>
+              <p>Instead of paying per API call or negotiating custom deals:</p>
               <ul>
                 <li><strong>Define what you want</strong> &mdash; Select from standardized outcome types (resolve a ticket, review code, draft a contract)</li>
                 <li><strong>Set your price</strong> &mdash; Use bid strategies like cost caps and ROAS targets</li>
-                <li><strong>Get guarantees</strong> &mdash; Outcomes are backed by verifiable success criteria or guarantee contracts</li>
+                <li><strong>Get guarantees</strong> &mdash; Outcomes are verified via conversion signals or backed by guarantee contracts</li>
                 <li><strong>Optimize over time</strong> &mdash; The Conversions API creates feedback loops for continuous improvement</li>
               </ul>
 

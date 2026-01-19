@@ -2278,6 +2278,17 @@ select {
   color: var(--primary-dark);
 }
 
+.docs-callout-info {
+  background: #f8fafc;
+  border: none;
+  border-left: 4px solid var(--primary);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+}
+
+.docs-callout-info strong {
+  color: var(--gray-900);
+}
+
 .docs-table {
   width: 100%;
   border-collapse: collapse;
